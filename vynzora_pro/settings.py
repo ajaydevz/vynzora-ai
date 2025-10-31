@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-tbme)+s(anaw1qs6(j#xe#4vqil&3t@6led*q+%k7#c+94tfbk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vynzoraa.onrender.com','127.0.0.1']
+ALLOWED_HOSTS = ['https://vynzora-ai-1.onrender.com','vynzora-ai-1.onrender.com']
 
 
 # Application definition
