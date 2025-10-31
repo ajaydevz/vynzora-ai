@@ -1,0 +1,256 @@
+{% extends 'admin_home/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="dashboard-content">
+
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <div class="welcome-content">
+      <h2>Welcome back, {{ user.username|default:"Admin" }}!</h2>
+      <p>Here's what's happening with your technology firm today</p>
+    </div>
+    <div class="welcome-illustration">
+      <i class="mdi mdi-monitor-dashboard"></i>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-cards">
+    <div class="stat-card primary">
+      <div class="stat-icon">
+        <i class="mdi mdi-briefcase-outline"></i>
+      </div>
+      <div class="stat-info">
+        <h3>Active Projects</h3>
+        <div class="value">{{ active_projects_count }}</div>
+        <div class="trend up">
+          <i class="mdi mdi-arrow-up"></i> {{ project_growth_percent|default:"0" }}% from last month
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card success">
+      <div class="stat-icon">
+        <i class="mdi mdi-account-multiple"></i>
+      </div>
+      <div class="stat-info">
+        <h3>Team Members</h3>
+        <div class="value">{{ team_members_count }}</div>
+        <div class="trend up">
+          <i class="mdi mdi-arrow-up"></i> {{ new_team_members|default:"0" }} new this month
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card warning">
+      <div class="stat-icon">
+        <i class="mdi mdi-laptop"></i>
+      </div>
+      <div class="stat-info">
+        <h3>Technologies</h3>
+        <div class="value">{{ total_technologies }}</div>
+        <div class="trend up">
+          <i class="mdi mdi-arrow-up"></i> {{ recent_tech_added|default:"0" }} added recently
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card danger">
+      <div class="stat-icon">
+        <i class="mdi mdi-account-search"></i>
+      </div>
+      <div class="stat-info">
+        <h3>Job Applications</h3>
+        <div class="value">{{ total_applications }}</div>
+        <div class="trend up">
+          <i class="mdi mdi-arrow-up"></i> {{ pending_applications }} pending review
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts and Analytics -->
+  <div class="row">
+    <div class="col-lg-8 col-md-12">
+      <div class="chart-container">
+        <div class="chart-header d-flex justify-content-between align-items-center">
+          <div>
+            <h3>Project Performance</h3>
+            <p class="text-muted mb-0">Monthly project completion rate</p>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              {{ selected_period }}
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="?period=month">Last Month</a></li>
+              <li><a class="dropdown-item" href="?period=6months">Last 6 Months</a></li>
+              <li><a class="dropdown-item" href="?period=year">This Year</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="chart-placeholder">
+          <canvas id="projectChart" data-chart='{{ project_chart_data|safe }}'></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-12">
+      <div class="chart-container">
+        <div class="chart-header">
+          <div>
+            <h3>Client Satisfaction</h3>
+            <p class="text-muted mb-0">Average rating</p>
+          </div>
+        </div>
+        <div class="satisfaction-score">
+          <div class="score-circle">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#e9ecef" stroke-width="8"/>
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#3498db" stroke-width="8"
+                      stroke-dasharray="283" stroke-dashoffset="{{ satisfaction_offset }}" 
+                      stroke-linecap="round" transform="rotate(-90 50 50)"/>
+            </svg>
+            <div class="score-text">
+              <h2>{{ average_rating }}</h2>
+              <p>out of 5</p>
+            </div>
+          </div>
+          <div class="rating-stats mt-2">
+            {% for rating in rating_stats %}
+            <div class="rating-item d-flex align-items-center mb-1">
+              <span class="stars me-2">{{ rating.stars }}★</span>
+              <div class="progress flex-grow-1 me-2">
+                <div class="progress-bar {{ rating.bar_class }}" style="width: {{ rating.percent }}%"></div>
+              </div>
+              <span class="percentage">{{ rating.percent }}%</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats Grid -->
+  <div class="row mt-4">
+    <div class="col-lg-3 col-md-6 col-sm-6">
+      <div class="quick-stat-card">
+        <i class="mdi mdi-web"></i>
+        <h4>Websites Built</h4>
+        <p class="stat-number">{{ websites_built }}</p>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6">
+      <div class="quick-stat-card">
+        <i class="mdi mdi-certificate"></i>
+        <h4>Certifications</h4>
+        <p class="stat-number">{{ certifications_count }}</p>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6">
+      <div class="quick-stat-card">
+        <i class="mdi mdi-post"></i>
+        <h4>Blog Posts</h4>
+        <p class="stat-number">{{ blog_posts_count }}</p>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6">
+      <div class="quick-stat-card">
+        <i class="mdi mdi-star"></i>
+        <h4>Client Reviews</h4>
+        <p class="stat-number">{{ client_reviews_count }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activities and Quick Actions -->
+  <div class="row mt-4">
+    <div class="col-lg-8 col-md-12">
+      <div class="recent-activities">
+        <div class="section-header d-flex justify-content-between align-items-center">
+          <h3>Recent Activities</h3>
+        </div>
+        <ul class="activities-list list-unstyled">
+          {% for activity in recent_activities %}
+          <li class="activity-item d-flex align-items-start mb-2">
+            <div class="activity-icon me-3 {{ activity.status_class }}">
+              <i class="{{ activity.icon }}"></i>
+            </div>
+            <div class="activity-content flex-grow-1">
+              <h4>{{ activity.title }}</h4>
+              <p>{{ activity.description }}</p>
+            </div>
+            <div class="activity-time text-muted ms-2">{{ activity.time_ago }}</div>
+          </li>
+          {% empty %}
+          <p class="text-muted text-center">No recent activities</p>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-12">
+      <div class="quick-actions">
+        <div class="section-header">
+          <h3>Quick Actions</h3>
+        </div>
+        <div class="action-buttons d-flex flex-column gap-2">
+          <a href="{% url 'add_project' %}" class="action-btn d-flex align-items-center">
+            <i class="mdi mdi-plus-circle me-2"></i><span>Add New Project</span>
+          </a>
+          <a href="{% url 'add_team' %}" class="action-btn d-flex align-items-center">
+            <i class="mdi mdi-account-plus me-2"></i><span>Add Team Member</span>
+          </a>
+          <a href="{% url 'add_blog_details' %}" class="action-btn d-flex align-items-center">
+            <i class="mdi mdi-post me-2"></i><span>Create Blog Post</span>
+          </a>
+          <a href="{% url 'add_job_details' %}" class="action-btn d-flex align-items-center">
+            <i class="mdi mdi-briefcase me-2"></i><span>Post Job Opening</span>
+          </a>
+          <a href="{% url 'view_candidate_details' %}" class="action-btn d-flex align-items-center">
+            <i class="mdi mdi-account-search me-2"></i><span>Review Applications</span>
+          </a>
+          <a href="{% url 'contact_view' %}" class="action-btn d-flex align-items-center">
+            <i class="mdi mdi-email me-2"></i><span>View Messages</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const chartData = JSON.parse(document.getElementById('projectChart').dataset.chart);
+const ctx = document.getElementById('projectChart').getContext('2d');
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: chartData.labels,
+        datasets: [{
+            label: 'Projects Completed',
+            data: chartData.data,
+            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+            borderColor: '#3498db',
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
+{% endblock %}

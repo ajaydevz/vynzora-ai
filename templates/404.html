@@ -1,0 +1,138 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+    <meta charset="UTF-8">
+    <title>404 - Page Not Found!</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
+
+       <!-- Google Tag Manager -->
+       <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-572V4DS5');
+    </script>
+    <!-- End Google Tag Manager -->
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: none;
+            flex-direction: column;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+        }
+
+        .text-404 {
+            font-size: 180px;
+            font-family: Arial, sans-serif;
+            color: #333;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            user-select: none;
+        }
+
+        .message {
+            color: #bbb;
+            font-family: Arial, sans-serif;
+            font-size: 22px;
+            margin-top: -20px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .home-button {
+            display: inline-block;
+            font-family: Arial, sans-serif;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #bbb;
+            color: black;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #bbb;
+        }
+
+        .light {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, 
+                rgba(255,255,255,0.15) 0%, 
+                rgba(255,255,255,0.1) 20%, 
+                rgba(255,255,255,0.05) 40%, 
+                transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+    </style>
+</head>
+<body>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript>
+            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-572V4DS5"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+        </noscript>
+        <!-- End Google Tag Manager (noscript) -->
+    <div class="container">
+        <div class="text-404">404</div>
+        <div class="message">Page Not Found!</div>
+        <a href="{% url 'index' %}" class="home-button">Take Me Home</a>
+    </div>
+    <div class="light"></div>
+
+    <script>
+        const light = document.querySelector('.light');
+        const text = document.querySelector('.text-404');
+        
+        document.addEventListener('mousemove', (e) => {
+            light.style.left = e.clientX + 'px';
+            light.style.top = e.clientY + 'px';
+            
+            const rect = text.getBoundingClientRect();
+            const textCenter = {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2
+            };
+            
+            const distance = Math.sqrt(
+                Math.pow(e.clientX - textCenter.x, 2) + 
+                Math.pow(e.clientY - textCenter.y, 2)
+            );
+            
+            const brightness = Math.max(0.3, 1 - (distance / 500));
+            text.style.color = `rgba(150, 150, 150, ${brightness})`;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            light.style.left = touch.clientX + 'px';
+            light.style.top = touch.clientY + 'px';
+        });
+    </script>
+</body>
+</html>

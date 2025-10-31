@@ -1,0 +1,748 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-job-container {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .btn-back {
+    padding: 10px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-back:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+
+  .job-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .job-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+  }
+
+  .job-card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .job-card-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .form-textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #e67e22;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn-submit {
+    flex: 1;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 14px 24px;
+    background: #e9ecef;
+    color: #495057;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+  }
+
+  .error-message {
+    font-size: 12px;
+    color: #e74c3c;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .success-message {
+    background: linear-gradient(135deg, #27ae60, #219653);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .salary-input {
+    position: relative;
+  }
+
+  .salary-input .form-control {
+    padding-left: 40px;
+  }
+
+  .salary-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 16px;
+  }
+
+  /* CKEditor Custom Styling */
+  .ck-editor {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ck.ck-editor__editable:not(.ck-editor__nested-editable) {
+    min-height: 200px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+
+  .ck.ck-editor__editable:not(.ck-editor__nested-editable):focus {
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .ck.ck-toolbar {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .ck.ck-toolbar .ck.ck-toolbar__separator {
+    background-color: #e9ecef;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .add-job-container {
+      padding: 0 15px;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .job-card-body {
+      padding: 20px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .header-left h2 {
+      font-size: 20px;
+    }
+
+    .job-card-header {
+      padding: 20px;
+    }
+
+    .job-card-header h3 {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<div class="add-job-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Add New Job</h2>
+      <p>Create a new job posting to attract candidates</p>
+    </div>
+    <a href="{% url 'view_job_details' %}" class="btn-back">
+      <i class="mdi mdi-arrow-left"></i>
+      Back to Jobs
+    </a>
+  </div>
+
+  <!-- Success Message -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'success' %}
+        <div class="success-message">
+          <i class="mdi mdi-check-circle"></i>
+          {{ message }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  <!-- Job Card -->
+  <div class="job-card">
+    <div class="job-card-header">
+      <h3>
+        <i class="mdi mdi-briefcase-plus"></i>
+        Job Details
+      </h3>
+    </div>
+    <div class="job-card-body">
+      <form class="forms-sample" method="POST" enctype="multipart/form-data" id="jobForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label class="form-label">
+            Job Position<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="job_position" 
+            id="jobPosition" 
+            placeholder="e.g., Senior Web Developer"
+            value="{{ form.job_position.value|default_if_none:'' }}"
+            required
+            maxlength="100"
+          >
+          <div class="character-count" id="jobPositionCount">0/100 characters</div>
+          {% if form.job_position.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.job_position.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Job Type<span class="required">*</span></label>
+      <select class="form-control" name="job_type" id="jobType" required>
+        <option value="">Select Job Type</option>
+        {% for value, label in form.fields.job_type.choices %}
+        <option value="{{ value }}"
+          {% if form.job_type.value == value %}selected{% endif %}>
+          {{ label }}
+        </option>
+        {% endfor %}
+      </select>
+      {% if form.job_type.errors %}
+        <div class="error-message">{{ form.job_type.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Company Name<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="company_name" 
+              id="companyName" 
+              placeholder="e.g., Tech Solutions Inc."
+              value="{{ form.company_name.value|default_if_none:'' }}"
+              required
+              maxlength="100"
+            >
+            <div class="character-count" id="companyNameCount">0/100 characters</div>
+            {% if form.company_name.errors %}
+              <div class="error-message">
+                <i class="mdi mdi-alert-circle"></i>
+                {{ form.company_name.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              Location<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="place" 
+              id="place" 
+              placeholder="e.g., New York, NY"
+              value="{{ form.place.value|default_if_none:'' }}"
+              required
+              maxlength="100"
+            >
+            <div class="character-count" id="placeCount">0/100 characters</div>
+            {% if form.place.errors %}
+              <div class="error-message">
+                <i class="mdi mdi-alert-circle"></i>
+                {{ form.place.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Monthly Salary<span class="required">*</span>
+            </label>
+            <div class="salary-input">
+              <i class="mdi mdi-cash salary-icon"></i>
+              <input 
+                type="number" 
+                class="form-control" 
+                name="salary" 
+                id="salary" 
+                placeholder="e.g., 5000"
+                value="{{ form.salary.value|default_if_none:'' }}"
+                required
+                min="0"
+                step="100"
+              >
+            </div>
+            {% if form.salary.errors %}
+              <div class="error-message">
+                <i class="mdi mdi-alert-circle"></i>
+                {{ form.salary.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Job Details<span class="required">*</span>
+          </label>
+          <textarea 
+            class="form-control" 
+            name="job_details" 
+            id="jobDetails" 
+            rows="4" 
+            placeholder="Describe the job responsibilities, requirements, and benefits..."
+            required
+          >{{ form.job_details.value|default_if_none:'' }}</textarea>
+          {% if form.job_details.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.job_details.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              Posted Date<span class="required">*</span>
+            </label>
+            <input 
+              type="date" 
+              class="form-control" 
+              name="posted_date" 
+              id="postedDate" 
+              value="{{ form.posted_date.value|default_if_none:'' }}"
+              required
+            >
+            {% if form.posted_date.errors %}
+              <div class="error-message">
+                <i class="mdi mdi-alert-circle"></i>
+                {{ form.posted_date.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              End Date<span class="required">*</span>
+            </label>
+            <input 
+              type="date" 
+              class="form-control" 
+              name="end_date" 
+              id="endDate" 
+              value="{{ form.end_date.value|default_if_none:'' }}"
+              required
+            >
+            {% if form.end_date.errors %}
+              <div class="error-message">
+                <i class="mdi mdi-alert-circle"></i>
+                {{ form.end_date.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Post End Date & Time<span class="required">*</span>
+          </label>
+          <input 
+            type="datetime-local" 
+            class="form-control" 
+            name="post_end_date" 
+            id="postEndDate" 
+            value="{{ form.post_end_date.value|default_if_none:'' }}"
+            required
+          >
+          {% if form.post_end_date.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.post_end_date.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-actions">
+          <a href="{% url 'view_job_details' %}" class="btn-cancel">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </a>
+          <button type="submit" class="btn-submit">
+            <i class="mdi mdi-check"></i>
+            Create Job Posting
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const jobForm = document.getElementById('jobForm');
+    const jobPosition = document.getElementById('jobPosition');
+    const companyName = document.getElementById('companyName');
+    const place = document.getElementById('place');
+    const postedDate = document.getElementById('postedDate');
+    const endDate = document.getElementById('endDate');
+    const postEndDate = document.getElementById('postEndDate');
+    
+    let editorInstance = null; // Store CKEditor instance
+
+    // Set default dates
+    const today = new Date().toISOString().split('T')[0];
+    if (!postedDate.value) {
+      postedDate.value = today;
+    }
+
+    // Character count functionality
+    function updateCharacterCount(element, countElement, maxLength) {
+      const currentLength = element.value.length;
+      countElement.textContent = `${currentLength}/${maxLength} characters`;
+      
+      if (currentLength > maxLength * 0.9) {
+        countElement.classList.add('warning');
+        countElement.classList.remove('error');
+      } else if (currentLength > maxLength) {
+        countElement.classList.add('error');
+        countElement.classList.remove('warning');
+      } else {
+        countElement.classList.remove('warning', 'error');
+      }
+    }
+
+    // Date validation
+    function validateDates() {
+      const posted = new Date(postedDate.value);
+      const end = new Date(endDate.value);
+      const postEnd = new Date(postEndDate.value);
+
+      if (end < posted) {
+        alert('End date cannot be before posted date.');
+        return false;
+      }
+
+      if (postEnd < posted) {
+        alert('Post end date cannot be before posted date.');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Form validation and CKEditor sync
+    jobForm.addEventListener('submit', function(e) {
+      // CRITICAL: Sync CKEditor content to textarea before validation
+      if (editorInstance) {
+        const editorData = editorInstance.getData();
+        document.getElementById('jobDetails').value = editorData;
+      }
+
+      if (!validateDates()) {
+        e.preventDefault();
+        return false;
+      }
+
+      const position = jobPosition.value.trim();
+      const company = companyName.value.trim();
+      const location = place.value.trim();
+      const salary = document.getElementById('salary').value;
+      const jobDetails = document.getElementById('jobDetails').value.trim();
+
+      if (!position || !company || !location || !salary || !jobDetails) {
+        e.preventDefault();
+        alert('Please fill in all required fields, including job details.');
+        return false;
+      }
+
+      if (position.length > 100) {
+        e.preventDefault();
+        alert('Job position must be 100 characters or less.');
+        jobPosition.focus();
+        return false;
+      }
+
+      if (company.length > 100) {
+        e.preventDefault();
+        alert('Company name must be 100 characters or less.');
+        companyName.focus();
+        return false;
+      }
+
+      if (location.length > 100) {
+        e.preventDefault();
+        alert('Location must be 100 characters or less.');
+        place.focus();
+        return false;
+      }
+
+      if (salary < 0) {
+        e.preventDefault();
+        alert('Salary cannot be negative.');
+        document.getElementById('salary').focus();
+        return false;
+      }
+
+      // Final check: ensure job details has content
+      if (jobDetails.length === 0) {
+        e.preventDefault();
+        alert('Please enter job details.');
+        return false;
+      }
+    });
+
+    // Initialize character count listeners
+    if (jobPosition) {
+      jobPosition.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('jobPositionCount'), 100);
+      });
+      updateCharacterCount(jobPosition, document.getElementById('jobPositionCount'), 100);
+    }
+    
+    if (companyName) {
+      companyName.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('companyNameCount'), 100);
+      });
+      updateCharacterCount(companyName, document.getElementById('companyNameCount'), 100);
+    }
+    
+    if (place) {
+      place.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('placeCount'), 100);
+      });
+      updateCharacterCount(place, document.getElementById('placeCount'), 100);
+    }
+
+    // Date change listeners for validation
+    postedDate.addEventListener('change', validateDates);
+    endDate.addEventListener('change', validateDates);
+    postEndDate.addEventListener('change', validateDates);
+
+    // Initialize CKEditor and store the instance
+    ClassicEditor
+      .create(document.querySelector('#jobDetails'), {
+        toolbar: {
+          items: [
+            'heading', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'bulletedList', 'numberedList', '|',
+            'outdent', 'indent', '|',
+            'link', 'blockQuote', 'insertTable', '|',
+            'undo', 'redo'
+          ]
+        },
+        placeholder: 'Describe the job responsibilities, requirements, and benefits...',
+      })
+      .then(editor => {
+        editorInstance = editor; // Store the editor instance
+        console.log('CKEditor initialized successfully');
+        
+        // Optional: Sync on every change (for real-time updates)
+        editor.model.document.on('change:data', () => {
+          document.getElementById('jobDetails').value = editor.getData();
+        });
+      })
+      .catch(error => {
+        console.error('Error initializing CKEditor:', error);
+      });
+
+    // Focus on first input field
+    if (jobPosition) {
+      jobPosition.focus();
+    }
+  });
+</script>
+{% endblock %}

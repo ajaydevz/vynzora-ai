@@ -1,0 +1,787 @@
+{% extends 'admin_home/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-review-container {
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    margin-bottom: 30px;
+  }
+
+  .page-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .page-header p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 10px;
+  }
+
+  .breadcrumb-nav a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .breadcrumb-nav a:hover {
+    color: #2980b9;
+  }
+
+  .breadcrumb-nav i {
+    font-size: 12px;
+  }
+
+  .form-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    color: white;
+    text-align: center;
+  }
+
+  .form-header i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+  }
+
+  .form-header h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .form-header p {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .form-body {
+    padding: 40px;
+  }
+
+  .form-section {
+    margin-bottom: 30px;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title i {
+    color: #3498db;
+    font-size: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    font-family: inherit;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .form-control:hover {
+    border-color: #cbd5e0;
+  }
+
+  .input-icon-wrapper {
+    position: relative;
+  }
+
+  .input-icon-wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 18px;
+    z-index: 1;
+  }
+
+  .input-icon-wrapper .form-control {
+    padding-left: 48px;
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  .char-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .char-count {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+  }
+
+  .char-count.warning {
+    color: #f39c12;
+  }
+
+  .char-count.error {
+    color: #e74c3c;
+  }
+
+  .file-upload-wrapper {
+    position: relative;
+  }
+
+  .file-upload-box {
+    border: 2px dashed #cbd5e0;
+    border-radius: 10px;
+    padding: 40px 20px;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .file-upload-box:hover {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.05);
+  }
+
+  .file-upload-box.drag-over {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+  }
+
+  .file-upload-icon {
+    font-size: 48px;
+    color: #3498db;
+    margin-bottom: 15px;
+  }
+
+  .file-upload-text h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .file-upload-text p {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 0;
+  }
+
+  .file-upload-input {
+    display: none;
+  }
+
+  .image-preview {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .image-preview.show {
+    display: block;
+  }
+
+  .preview-image {
+    max-width: 250px;
+    max-height: 250px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+  }
+
+  .preview-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 12px 20px;
+    background: #e8f5e9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  .preview-info i {
+    color: #2ecc71;
+    font-size: 20px;
+  }
+
+  .preview-info span {
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: 500;
+  }
+
+  .remove-image-btn {
+    padding: 8px 20px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .remove-image-btn:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 2px solid #f1f3f5;
+  }
+
+  .btn {
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    flex: 1;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: #e9ecef;
+    color: #495057;
+    flex: 1;
+  }
+
+  .btn-secondary:hover {
+    background: #dee2e6;
+  }
+
+  .btn i {
+    font-size: 18px;
+  }
+
+  .help-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .help-text i {
+    font-size: 14px;
+  }
+
+  .error-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .error-message.show {
+    display: flex;
+  }
+
+  .error-message i {
+    font-size: 14px;
+  }
+
+  /* Rating Stars */
+  .rating-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .star-rating {
+    display: flex;
+    gap: 5px;
+  }
+
+  .star {
+    font-size: 28px;
+    color: #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .star:hover,
+  .star.active {
+    color: #f39c12;
+    transform: scale(1.1);
+  }
+
+  .rating-text {
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: 500;
+    margin-left: 10px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .form-body {
+      padding: 30px 20px;
+    }
+
+    .form-header {
+      padding: 25px 20px;
+    }
+
+    .form-header i {
+      font-size: 36px;
+    }
+
+    .form-header h3 {
+      font-size: 20px;
+    }
+
+    .page-header h2 {
+      font-size: 24px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+    }
+
+    .file-upload-box {
+      padding: 30px 15px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .form-body {
+      padding: 25px 15px;
+    }
+
+    .form-header {
+      padding: 20px 15px;
+    }
+
+    .page-header h2 {
+      font-size: 20px;
+    }
+
+    .breadcrumb-nav {
+      font-size: 13px;
+    }
+
+    .star {
+      font-size: 24px;
+    }
+  }
+
+  /* Success Animation */
+  @keyframes successPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .form-card.success {
+    animation: successPulse 0.5s ease;
+  }
+</style>
+
+<div class="add-review-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h2>Add Client Review</h2>
+    <p>Capture and showcase client testimonials</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <div class="form-header">
+      <i class="mdi mdi-message-text-outline"></i>
+      <h3>New Client Review</h3>
+      <p>Fill in the details below to add a new client testimonial</p>
+    </div>
+
+    <div class="form-body">
+      <form method="POST" enctype="multipart/form-data" id="addReviewForm">
+        {% csrf_token %}
+        
+        <!-- Client Information Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-account-circle"></i>
+            <span>Client Information</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Client Name<span class="required">*</span>
+            </label>
+            <div class="input-icon-wrapper">
+              <i class="mdi mdi-account"></i>
+              <input 
+                type="text" 
+                class="form-control" 
+                name="client_name" 
+                id="ClientName"
+                placeholder="Enter client's full name (e.g., John Smith)" 
+                required
+              >
+            </div>
+            <div class="help-text">
+              <i class="mdi mdi-information"></i>
+              <span>Enter the client's full name as it should appear</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Designation<span class="required">*</span>
+            </label>
+            <div class="input-icon-wrapper">
+              <i class="mdi mdi-briefcase"></i>
+              <input 
+                type="text" 
+                class="form-control" 
+                name="designation" 
+                id="designation"
+                placeholder="Enter position (e.g., CEO at TechCorp)" 
+                required
+              >
+            </div>
+            <div class="help-text">
+              <i class="mdi mdi-information"></i>
+              <span>Client's job title and company</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-comment-quote-outline"></i>
+            <span>Review Content</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Review<span class="required">*</span>
+            </label>
+            <textarea 
+              class="form-control" 
+              name="review" 
+              id="review" 
+              rows="5"
+              placeholder="Enter the client's testimonial or feedback..."
+              oninput="checkCharacterLimit(this)" 
+              required
+            ></textarea>
+            <div class="char-counter">
+              <div class="help-text">
+                <i class="mdi mdi-information"></i>
+                <span>Share what the client said about your service</span>
+              </div>
+              <span class="char-count" id="charCount">0 / 400</span>
+            </div>
+            <div class="error-message" id="character_error">
+              <i class="mdi mdi-alert-circle"></i>
+              <span>Maximum 400 characters allowed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Image Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-image"></i>
+            <span>Client Image</span>
+          </div>
+
+          <div class="file-upload-wrapper">
+            <div class="file-upload-box" id="fileUploadBox">
+              <div class="file-upload-icon">
+                <i class="mdi mdi-cloud-upload"></i>
+              </div>
+              <div class="file-upload-text">
+                <h4>Click to upload or drag and drop</h4>
+                <p>PNG, JPG, JPEG (Max size: 5MB)</p>
+              </div>
+              <input 
+                type="file" 
+                class="file-upload-input" 
+                id="imageFile" 
+                name="client_image" 
+                accept="image/*" 
+                required
+              >
+            </div>
+
+            <div class="image-preview" id="imagePreview">
+              <img src="" alt="Preview" class="preview-image" id="previewImg">
+              <div class="preview-info">
+                <i class="mdi mdi-check-circle"></i>
+                <span id="fileName">Image uploaded successfully</span>
+              </div>
+              <button type="button" class="remove-image-btn" id="removeImageBtn">
+                <i class="mdi mdi-delete"></i> Remove Image
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+            <i class="mdi mdi-arrow-left"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <i class="mdi mdi-check"></i>
+            Add Review
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // File upload functionality
+  const fileUploadBox = document.getElementById('fileUploadBox');
+  const fileInput = document.getElementById('imageFile');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  const fileName = document.getElementById('fileName');
+  const removeImageBtn = document.getElementById('removeImageBtn');
+
+  // Click to upload
+  fileUploadBox.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  // File input change
+  fileInput.addEventListener('change', function(e) {
+    handleFile(this.files[0]);
+  });
+
+  // Drag and drop
+  fileUploadBox.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileUploadBox.classList.add('drag-over');
+  });
+
+  fileUploadBox.addEventListener('dragleave', () => {
+    fileUploadBox.classList.remove('drag-over');
+  });
+
+  fileUploadBox.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileUploadBox.classList.remove('drag-over');
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInput.files = dataTransfer.files;
+      handleFile(file);
+    }
+  });
+
+  // Handle file
+  function handleFile(file) {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file (PNG, JPG, JPEG)');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      fileName.textContent = file.name;
+      fileUploadBox.style.display = 'none';
+      imagePreview.classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Remove image
+  removeImageBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput.value = '';
+    previewImg.src = '';
+    fileUploadBox.style.display = 'block';
+    imagePreview.classList.remove('show');
+  });
+
+  // Character counter
+  const reviewTextarea = document.getElementById('review');
+  const charCount = document.getElementById('charCount');
+  const characterError = document.getElementById('character_error');
+
+  function checkCharacterLimit(textarea) {
+    const maxLength = 400;
+    const currentLength = textarea.value.length;
+    
+    charCount.textContent = `${currentLength} / ${maxLength}`;
+    
+    if (currentLength > maxLength) {
+      characterError.classList.add('show');
+      charCount.classList.add('error');
+      charCount.classList.remove('warning');
+    } else if (currentLength > maxLength * 0.9) {
+      characterError.classList.remove('show');
+      charCount.classList.add('warning');
+      charCount.classList.remove('error');
+    } else {
+      characterError.classList.remove('show');
+      charCount.classList.remove('warning', 'error');
+    }
+  }
+
+  // Form validation
+  const form = document.getElementById('addReviewForm');
+  form.addEventListener('submit', function(e) {
+    const name = document.getElementById('ClientName').value.trim();
+    const designation = document.getElementById('designation').value.trim();
+    const review = reviewTextarea.value.trim();
+    const image = fileInput.files[0];
+
+    if (!name || !designation || !review || !image) {
+      e.preventDefault();
+      alert('Please fill in all required fields');
+      return false;
+    }
+
+    if (review.length > 400) {
+      e.preventDefault();
+      alert('Review must be 400 characters or less');
+      reviewTextarea.focus();
+      return false;
+    }
+
+    // Add loading state to submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Submitting...';
+    submitBtn.disabled = true;
+  });
+
+  // Input animations
+  const inputs = document.querySelectorAll('.form-control');
+  inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+      if (this.parentElement.classList.contains('input-icon-wrapper')) {
+        this.parentElement.style.transform = 'scale(1.01)';
+      } else {
+        this.style.transform = 'scale(1.01)';
+      }
+    });
+    
+    input.addEventListener('blur', function() {
+      if (this.parentElement.classList.contains('input-icon-wrapper')) {
+        this.parentElement.style.transform = 'scale(1)';
+      } else {
+        this.style.transform = 'scale(1)';
+      }
+    });
+  });
+</script>
+{% endblock %}

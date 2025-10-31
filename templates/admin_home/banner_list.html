@@ -1,0 +1,666 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .banners-list-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .btn-add {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+    color: white;
+  }
+
+  .banners-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .banners-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .banners-card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .banners-count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .banners-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .banners-table thead {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .banners-table thead th {
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .banners-table tbody tr {
+    border-bottom: 1px solid #f1f3f5;
+    transition: all 0.3s ease;
+  }
+
+  .banners-table tbody tr:hover {
+    background: #f8f9fa;
+  }
+
+  .banners-table tbody td {
+    padding: 20px;
+    font-size: 14px;
+    color: #495057;
+    vertical-align: middle;
+  }
+
+  .banner-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 4px;
+  }
+
+  .banner-occasion {
+    font-size: 12px;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .status-active {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .status-inactive {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  .status-expired {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .color-swatch {
+    display: inline-flex;
+    gap: 5px;
+  }
+
+  .color-box {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 2px solid #e9ecef;
+  }
+
+  .discount-display {
+    font-size: 18px;
+    font-weight: 700;
+    color: #e74c3c;
+  }
+
+  .timer-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .timer-icon {
+    color: #3498db;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-action {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+
+  .btn-update {
+    background: #3498db;
+    color: white;
+  }
+
+  .btn-update:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    color: white;
+  }
+
+  .btn-delete {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .empty-state i {
+    font-size: 64px;
+    color: #cbd5e0;
+    margin-bottom: 20px;
+  }
+
+  .empty-state h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 25px;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 30px;
+  }
+
+  .delete-warning {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .delete-warning i {
+    font-size: 64px;
+    color: #e74c3c;
+    margin-bottom: 20px;
+  }
+
+  .delete-warning h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .delete-warning p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+
+  .delete-banner-name {
+    font-weight: 700;
+    color: #e74c3c;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .btn-modal {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-cancel {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+  }
+
+  .btn-confirm-delete {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+  }
+
+  .btn-confirm-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+  }
+
+  .priority-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #3498db;
+    color: white;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .banners-table thead th,
+    .banners-table tbody td {
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .btn-action {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .modal-content {
+      width: 95%;
+      margin: 10px;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<div class="banners-list-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Promotional Banners</h2>
+      <p>Manage promotional banners for special occasions</p>
+    </div>
+    <div class="header-right">
+      <a href="{% url 'add_banner' %}" class="btn-add">
+        <i class="mdi mdi-plus"></i>
+        Add New Banner
+      </a>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}" style="padding: 15px; border-radius: 10px; margin-bottom: 20px; background: {% if message.tags == 'success' %}#d4edda{% elif message.tags == 'error' %}#f8d7da{% else %}#d1ecf1{% endif %}; border: 1px solid {% if message.tags == 'success' %}#c3e6cb{% elif message.tags == 'error' %}#f5c6cb{% else %}#bee5eb{% endif %}; color: {% if message.tags == 'success' %}#155724{% elif message.tags == 'error' %}#721c24{% else %}#0c5460{% endif %};">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Banners Card -->
+  <div class="banners-card">
+    <div class="banners-card-header">
+      <h3>
+        <i class="mdi mdi-billboard"></i>
+        All Promotional Banners
+      </h3>
+      <span class="banners-count">{{ banners|length }} Banner{{ banners|length|pluralize }}</span>
+    </div>
+
+    <div class="table-wrapper">
+      {% if banners %}
+      <table class="banners-table">
+        <thead>
+          <tr>
+            <th>Banner Info</th>
+            <th>Occasion</th>
+            <th>Discount</th>
+            <th>Status</th>
+            <th>End Date</th>
+            <th>Priority</th>
+            <th>Colors</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for banner in banners %}
+          <tr>
+            <td>
+              <div class="banner-title">{{ banner.title }}</div>
+              {% if banner.subtitle %}
+                <div style="font-size: 12px; color: #6c757d;">{{ banner.subtitle }}</div>
+              {% endif %}
+            </td>
+            <td>
+              <div class="banner-occasion">
+                <i class="mdi mdi-calendar"></i>
+                {{ banner.get_occasion_name }}
+              </div>
+            </td>
+            <td>
+              <div class="discount-display">{{ banner.discount_text }}</div>
+            </td>
+            <td>
+              {% if banner.is_currently_active %}
+                <span class="status-badge status-active">Active</span>
+              {% elif banner.status == 'inactive' %}
+                <span class="status-badge status-inactive">Inactive</span>
+              {% else %}
+                <span class="status-badge status-expired">Expired</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="timer-info">
+                {% if banner.show_timer %}
+                  <i class="mdi mdi-clock timer-icon"></i>
+                {% endif %}
+                {{ banner.end_date|date:"M d, Y H:i" }}
+              </div>
+            </td>
+            <td>
+              <span class="priority-badge">{{ banner.priority }}</span>
+            </td>
+            <td>
+              <div class="color-swatch">
+                <div class="color-box" style="background-color: {{ banner.background_color }};" title="Background"></div>
+                <div class="color-box" style="background-color: {{ banner.accent_color }};" title="Accent"></div>
+              </div>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <a href="{% url 'update_banner' banner.pk %}" class="btn-action btn-update">
+                  <i class="mdi mdi-pencil"></i>
+                  Edit
+                </a>
+                <button 
+                  type="button" 
+                  class="btn-action btn-delete" 
+                  onclick="openDeleteModal({{ banner.id }}, '{{ banner.title|escapejs }}')"
+                >
+                  <i class="mdi mdi-delete"></i>
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <i class="mdi mdi-billboard"></i>
+        <h3>No Promotional Banners Yet</h3>
+        <p>Create your first banner to start promoting special offers</p>
+        <a href="{% url 'add_banner' %}" class="btn-add">
+          <i class="mdi mdi-plus"></i>
+          Add First Banner
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>
+        <i class="mdi mdi-alert"></i>
+        Delete Banner
+      </h3>
+      <button type="button" class="modal-close" onclick="closeDeleteModal()">
+        <i class="mdi mdi-close"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="delete-warning">
+        <i class="mdi mdi-alert-circle-outline"></i>
+        <h4>Are you sure?</h4>
+        <p>You are about to delete the banner:</p>
+        <p class="delete-banner-name" id="deleteBannerName"></p>
+        <p style="margin-top: 15px;">This action cannot be undone.</p>
+      </div>
+
+      <form method="POST" id="deleteForm" action="">
+        {% csrf_token %}
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" onclick="closeDeleteModal()">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn-modal btn-confirm-delete">
+            <i class="mdi mdi-delete"></i>
+            Yes, Delete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const deleteModal = document.getElementById('deleteModal');
+
+  function openDeleteModal(id, title) {
+    document.getElementById('deleteForm').action = `{% url 'delete_banner' 0 %}`.replace('0', id);
+    document.getElementById('deleteBannerName').textContent = title;
+    deleteModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDeleteModal() {
+    deleteModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+  }
+
+  // Close modal when clicking outside
+  window.addEventListener('click', function(event) {
+    if (event.target === deleteModal) {
+      closeDeleteModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeDeleteModal();
+    }
+  });
+</script>
+{% endblock %}

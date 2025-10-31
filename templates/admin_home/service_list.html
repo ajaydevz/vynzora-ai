@@ -1,0 +1,1891 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  .service-list-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .header-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .search-box {
+    position: relative;
+    width: 300px;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 45px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .search-box i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 18px;
+  }
+
+  .clear-search {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+    transition: color 0.3s ease;
+  }
+
+  .clear-search:hover {
+    color: #e74c3c;
+  }
+
+  .clear-search.show {
+    display: block;
+  }
+
+  .btn-add {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .service-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .service-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .service-card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .service-count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .service-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .service-table thead {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .service-table thead th {
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .service-table tbody tr {
+    border-bottom: 1px solid #f1f3f5;
+    transition: all 0.3s ease;
+  }
+
+  .service-table tbody tr:hover {
+    background: #f8f9fa;
+    transform: scale(1.01);
+  }
+
+  .service-table tbody td {
+    padding: 20px;
+    font-size: 14px;
+    color: #495057;
+  }
+
+  .service-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .service-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .service-details h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 6px 0;
+  }
+
+  .service-details p {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+  }
+
+  .no-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  .service-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: #e3f2fd;
+    color: #1976d2;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .meta-badge i {
+    font-size: 14px;
+  }
+
+  .meta-badge.offers {
+    background: #f3e5f5;
+    color: #7b1fa2;
+  }
+
+  .meta-badge.steps {
+    background: #e8f5e9;
+    color: #388e3c;
+  }
+
+  .meta-badge.faqs {
+    background: #fff3e0;
+    color: #f57c00;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-action {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+
+  .btn-update {
+    background: #3498db;
+    color: white;
+  }
+
+  .btn-update:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-delete {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .empty-state i {
+    font-size: 64px;
+    color: #cbd5e0;
+    margin-bottom: 20px;
+  }
+
+  .empty-state h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 25px;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .no-results i {
+    font-size: 48px;
+    color: #cbd5e0;
+    margin-bottom: 15px;
+  }
+
+  .no-results p {
+    font-size: 14px;
+    color: #6c757d;
+  }
+
+  .highlight {
+    background: #fff3cd;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 800px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 16px 16px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 30px;
+  }
+
+  /* Form Styles */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+  }
+
+  .required {
+    color: #e74c3c;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #f39c12;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+  }
+
+  /* Image Upload Styles */
+  .current-image-wrapper {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    display: none;
+  }
+
+  .current-image-wrapper h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #2c3e50;
+  }
+
+  .current-image {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .image-actions {
+    margin-top: 10px;
+  }
+
+  .btn-clear-image {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-clear-image:hover {
+    background: #c0392b;
+  }
+
+  .file-input-wrapper {
+    position: relative;
+  }
+
+  .file-input-wrapper input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .file-input-custom {
+    padding: 20px;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+
+  .file-input-wrapper:hover .file-input-custom {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .file-input-custom i {
+    font-size: 32px;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+
+  .file-input-custom small {
+    color: #6c757d;
+  }
+
+  /* Modal Actions */
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .btn-modal {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-cancel {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-confirm-delete {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+  }
+
+  .btn-confirm-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+  }
+
+  /* Delete Modal Styles */
+  .delete-warning {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .delete-warning i {
+    font-size: 64px;
+    color: #e74c3c;
+    margin-bottom: 20px;
+  }
+
+  .delete-warning h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .delete-warning p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+
+  .delete-service-name {
+    font-weight: 700;
+    color: #e74c3c;
+    font-size: 18px;
+  }
+
+  /* Tab Styles */
+  .modal-tabs {
+    display: flex;
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 20px;
+  }
+
+  .tab-button {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+  }
+
+  .tab-button:hover {
+    color: #3498db;
+  }
+
+  .tab-button.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .tab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .tab-header h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 16px;
+  }
+
+  .btn-add-small {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #27ae60, #219653);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-add-small:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  }
+
+  /* Formset Styles */
+  .formset-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+
+  .formset-item {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 2px solid #e9ecef;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .formset-item:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+  }
+
+  .formset-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f1f3f5;
+  }
+
+  .formset-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .formset-number {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .btn-remove-formset {
+    padding: 6px 14px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-remove-formset:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+  }
+
+  .btn-add-formset {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .btn-add-formset:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(46, 204, 113, 0.3);
+  }
+
+  .formset-limit-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .help-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .help-text i {
+    font-size: 14px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .header-right {
+      flex-direction: column;
+    }
+
+    .search-box {
+      width: 100%;
+    }
+
+    .service-table thead th,
+    .service-table tbody td {
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .service-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .service-image,
+    .no-image {
+      width: 60px;
+      height: 60px;
+    }
+
+    .service-details p {
+      max-width: 100%;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn-action {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .modal-content {
+      width: 95%;
+      margin: 10px;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+
+    .btn-modal {
+      width: 100%;
+    }
+
+    .modal-tabs {
+      flex-wrap: wrap;
+    }
+    
+    .tab-button {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+    }
+  }
+
+  /* Scrollbar Styling */
+  .table-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+
+  .modal-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .modal-content::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+  }
+
+  .modal-content::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+  }
+
+  .modal-content::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+</style>
+
+<div class="service-list-container">
+  <!-- Alert Messages -->
+  <div id="alertMessage" class="alert-message"></div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Services</h2>
+      <p>Manage your services and their information</p>
+    </div>
+    <div class="header-right">
+      <div class="search-box">
+        <i class="mdi mdi-magnify"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search by service name..." 
+          autocomplete="off"
+        >
+        <button type="button" class="clear-search" id="clearSearch">
+          <i class="mdi mdi-close"></i>
+        </button>
+      </div>
+      <a href="{% url 'service_add' %}" class="btn-add">
+        <i class="mdi mdi-plus"></i>
+        Add Service
+      </a>
+    </div>
+  </div>
+
+  <!-- Service Card -->
+  <div class="service-card">
+    <div class="service-card-header">
+      <h3>
+        <i class="mdi mdi-briefcase-outline"></i>
+        All Services
+      </h3>
+      <span class="service-count" id="serviceCount">{{ services|length }} Services</span>
+    </div>
+
+    <div class="table-wrapper">
+      {% if services %}
+      <table class="service-table">
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Details</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="serviceTableBody">
+          {% for service in services %}
+          <tr data-name="{{ service.name }}" data-description="{{ service.description }}" id="service-row-{{ service.id }}">
+            <td>
+              <div class="service-info">
+                {% if service.image %}
+                  <img src="{{ service.image.url }}" alt="{{ service.name }}" class="service-image" id="service-image-{{ service.id }}">
+                {% else %}
+                  <div class="no-image">{{ service.name|first|upper }}</div>
+                {% endif %}
+                <div class="service-details">
+                  <h4 class="service-name" id="service-name-{{ service.id }}">{{ service.name }}</h4>
+                  <p class="service-description" id="service-description-{{ service.id }}">{{ service.description|truncatewords:20 }}</p>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="service-meta">
+                <span class="meta-badge offers">
+                  <i class="mdi mdi-star-circle"></i>
+                  <span id="offers-count-{{ service.id }}">{{ service.offers.count }}</span> Offers
+                </span>
+                <span class="meta-badge steps">
+                  <i class="mdi mdi-list-status"></i>
+                  <span id="steps-count-{{ service.id }}">{{ service.process_steps.count }}</span> Steps
+                </span>
+                <span class="meta-badge faqs">
+                  <i class="mdi mdi-help-circle"></i>
+                  <span id="faqs-count-{{ service.id }}">{{ service.faqs.count }}</span> FAQs
+                </span>
+              </div>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button 
+                  type="button" 
+                  class="btn-action btn-update" 
+                  onclick="openUpdateModal(
+                    {{ service.pk }}, 
+                    '{{ service.name|escapejs }}', 
+                    '{{ service.description|escapejs }}', 
+                    '{% if service.image %}{{ service.image.url }}{% endif %}',
+                    {{ service.offers.all|length }},
+                    {{ service.process_steps.all|length }},
+                    {{ service.faqs.all|length }}
+                  )"
+                >
+                  <i class="mdi mdi-pencil"></i>
+                  Update
+                </button>
+                <button 
+                  type="button" 
+                  class="btn-action btn-delete" 
+                  onclick="openDeleteModal({{ service.pk }}, '{{ service.name|escapejs }}')"
+                >
+                  <i class="mdi mdi-delete"></i>
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="no-results" id="noResults" style="display: none;">
+        <i class="mdi mdi-magnify"></i>
+        <p>No services found matching your search.</p>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="mdi mdi-briefcase-off"></i>
+        <h3>No Services Yet</h3>
+        <p>Start by adding your first service</p>
+        <a href="{% url 'service_add' %}" class="btn-add">
+          <i class="mdi mdi-plus"></i>
+          Add First Service
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Update Modal -->
+<div id="updateModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>
+        <i class="mdi mdi-pencil"></i>
+        Update Service
+      </h3>
+      <button type="button" class="modal-close" onclick="closeUpdateModal()">
+        <i class="mdi mdi-close"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form method="POST" enctype="multipart/form-data" id="updateForm">
+        {% csrf_token %}
+        
+        <!-- Alert for form errors -->
+        <div id="formErrors" class="alert-message alert-error" style="display: none;"></div>
+        
+        <!-- Tab Navigation -->
+        <div class="modal-tabs">
+          <button type="button" class="tab-button active" data-tab="service-tab">Service</button>
+          <button type="button" class="tab-button" data-tab="offers-tab">Offers</button>
+          <button type="button" class="tab-button" data-tab="steps-tab">Process Steps</button>
+          <button type="button" class="tab-button" data-tab="faqs-tab">FAQs</button>
+        </div>
+        
+        <!-- Service Tab -->
+        <div id="service-tab" class="tab-content active">
+          <div class="form-group">
+            <label class="form-label">
+              Service Name<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="name" 
+              id="updateName" 
+              placeholder="Enter service name" 
+              required
+              maxlength="200"
+            >
+            <div class="character-count" id="updateNameCount">0/200 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Description<span class="required">*</span>
+            </label>
+            <textarea 
+              class="form-control" 
+              name="description" 
+              id="updateDescription" 
+              placeholder="Enter service description..." 
+              required
+              rows="6"
+            ></textarea>
+            <div class="help-text">
+              <i class="mdi mdi-information"></i>
+              <span>Provide a detailed description of the service</span>
+            </div>
+          </div>
+
+          <div class="current-image-wrapper" id="currentImageWrapper">
+            <h4>Current Image</h4>
+            <img src="" alt="Current" class="current-image" id="currentImage">
+            <div class="image-actions" id="imageActions" style="display: none;">
+              <button type="button" class="btn-clear-image" onclick="clearImageSelection()">
+                <i class="mdi mdi-close"></i>
+                Clear New Image
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Upload New Image (Optional)
+            </label>
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                class="form-control" 
+                name="image" 
+                id="imageInput"
+                accept="image/*"
+              >
+              <div class="file-input-custom" id="fileInputCustom">
+                <i class="mdi mdi-cloud-upload"></i>
+                Click to browse or drag & drop an image
+                <br>
+                <small>Supports: JPG, PNG, GIF (Max: 5MB)</small>
+              </div>
+            </div>
+            <small style="color: #6c757d; font-size: 12px; margin-top: 6px; display: block;">
+              <i class="mdi mdi-information"></i> Leave empty to keep current image
+            </small>
+          </div>
+        </div>
+        
+        <!-- Offers Tab -->
+        <div id="offers-tab" class="tab-content">
+          <div class="formset-container">
+            <div class="tab-header">
+              <h4>Service Offers</h4>
+              <button type="button" class="btn-add-formset" onclick="addFormsetItem('offer')">
+                <i class="mdi mdi-plus"></i>
+                Add Another Offer
+              </button>
+            </div>
+            <div id="offerFormset">
+              <!-- Offers will be dynamically added here -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Process Steps Tab -->
+        <div id="steps-tab" class="tab-content">
+          <div class="formset-container">
+            <div class="tab-header">
+              <h4>Process Steps</h4>
+              <button type="button" class="btn-add-formset" id="addStepBtn" onclick="addFormsetItem('step')">
+                <i class="mdi mdi-plus"></i>
+                Add Another Step
+              </button>
+            </div>
+            <div id="stepFormset">
+              <!-- Process steps will be dynamically added here -->
+            </div>
+            <div class="formset-limit-text">
+              <i class="mdi mdi-information"></i>
+              <span>Maximum 4 process steps allowed</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- FAQs Tab -->
+        <div id="faqs-tab" class="tab-content">
+          <div class="formset-container">
+            <div class="tab-header">
+              <h4>Frequently Asked Questions</h4>
+              <button type="button" class="btn-add-formset" id="addFaqBtn" onclick="addFormsetItem('faq')">
+                <i class="mdi mdi-plus"></i>
+                Add Another FAQ
+              </button>
+            </div>
+            <div id="faqFormset">
+              <!-- FAQs will be dynamically added here -->
+            </div>
+            <div class="formset-limit-text">
+              <i class="mdi mdi-information"></i>
+              <span>Maximum 6 FAQs allowed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" onclick="closeUpdateModal()">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn-modal btn-submit" id="updateSubmitBtn">
+            <div class="loading-spinner"></div>
+            <i class="mdi mdi-check"></i>
+            Update Service
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+      <h3>
+        <i class="mdi mdi-alert"></i>
+        Delete Service
+      </h3>
+      <button type="button" class="modal-close" onclick="closeDeleteModal()">
+        <i class="mdi mdi-close"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="delete-warning">
+        <i class="mdi mdi-alert-circle-outline"></i>
+        <h4>Are you sure?</h4>
+        <p>You are about to delete the service</p>
+        <p class="delete-service-name" id="deleteServiceName"></p>
+        <p style="margin-top: 15px;">This will also delete all associated offers, steps, and FAQs. This action cannot be undone.</p>
+      </div>
+
+      <form method="POST" id="deleteForm" action="">
+        {% csrf_token %}
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" onclick="closeDeleteModal()">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn-modal btn-confirm-delete">
+            <i class="mdi mdi-delete"></i>
+            Yes, Delete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Modal elements
+  const updateModal = document.getElementById('updateModal');
+  const deleteModal = document.getElementById('deleteModal');
+  let currentServiceId = null;
+  let originalImageUrl = null;
+
+  // Search functionality
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  const serviceTableBody = document.getElementById('serviceTableBody');
+  const noResults = document.getElementById('noResults');
+  const serviceCount = document.getElementById('serviceCount');
+
+  // Formset counters
+  let offerCounter = 0;
+  let stepCounter = 0;
+  let faqCounter = 0;
+
+  // Show alert message
+  function showAlert(message, type = 'success') {
+    const alertElement = document.getElementById('alertMessage');
+    alertElement.textContent = message;
+    alertElement.className = `alert-message alert-${type}`;
+    alertElement.style.display = 'block';
+    
+    setTimeout(() => {
+      alertElement.style.display = 'none';
+    }, 5000);
+  }
+
+  // Clear form errors
+  function clearFormErrors() {
+    const errorElements = document.querySelectorAll('.field-error');
+    errorElements.forEach(el => el.remove());
+    
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach(group => group.classList.remove('has-error'));
+    
+    document.getElementById('formErrors').style.display = 'none';
+  }
+
+  // Update Modal functionality
+  function openUpdateModal(id, name, description, imageUrl, offersCount, stepsCount, faqsCount) {
+    currentServiceId = id;
+    originalImageUrl = imageUrl;
+    
+    // Clear previous errors
+    clearFormErrors();
+    
+    // Populate basic service fields
+    document.getElementById('updateName').value = name;
+    document.getElementById('updateDescription').value = description;
+    
+    // Update character count for name
+    updateCharacterCount(document.getElementById('updateName'), document.getElementById('updateNameCount'), 200);
+    
+    // Handle image display
+    const currentImageWrapper = document.getElementById('currentImageWrapper');
+    const currentImage = document.getElementById('currentImage');
+    
+    if (imageUrl && imageUrl !== 'None') {
+      currentImage.src = imageUrl;
+      currentImageWrapper.style.display = 'block';
+    } else {
+      currentImageWrapper.style.display = 'none';
+    }
+    
+    // Reset file input and preview
+    resetImagePreview();
+    
+    // Load service data (offers, steps, FAQs) from backend
+    loadServiceData(id);
+    
+    // Initialize tabs
+    initTabs();
+    
+    // Show modal
+    updateModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeUpdateModal() {
+    updateModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+    resetImagePreview();
+    clearDynamicFields();
+    
+    // Reset submit button
+    const submitBtn = document.getElementById('updateSubmitBtn');
+    submitBtn.classList.remove('loading');
+  }
+
+  function resetImagePreview() {
+    const imageInput = document.getElementById('imageInput');
+    const imageActions = document.getElementById('imageActions');
+    
+    imageInput.value = '';
+    imageActions.style.display = 'none';
+  }
+
+  function clearImageSelection() {
+    resetImagePreview();
+  }
+
+  // Tab functionality
+  function initTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+        
+        // Remove active class from all buttons and contents
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Add active class to current button and content
+        button.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+  }
+
+  // Formset management functions
+  function addFormsetItem(formsetType, data = {}) {
+    const container = document.getElementById(`${formsetType}Formset`);
+    let counter;
+    let title;
+    let fieldsHTML;
+    
+    switch(formsetType) {
+      case 'offer':
+        counter = ++offerCounter;
+        title = 'Offer';
+        fieldsHTML = `
+          <input type="hidden" name="offers-${counter}-id" value="${data.id || ''}">
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" name="offers-${counter}-title" placeholder="Enter offer title" value="${data.title || ''}" maxlength="200">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="offers-${counter}-description" placeholder="Enter offer description" rows="3">${data.description || ''}</textarea>
+          </div>
+          <input type="hidden" name="offers-${counter}-DELETE" id="id_offers-${counter}-DELETE" value="">
+        `;
+        break;
+        
+      case 'step':
+        counter = ++stepCounter;
+        title = 'Step';
+        fieldsHTML = `
+          <input type="hidden" name="steps-${counter}-id" value="${data.id || ''}">
+          <div class="form-group">
+            <label class="form-label">Step Title<span class="required">*</span></label>
+            <input type="text" class="form-control" name="steps-${counter}-title" placeholder="Enter step title" value="${data.title || ''}" maxlength="200" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tagline<span class="required">*</span></label>
+            <input type="text" class="form-control" name="steps-${counter}-tagline" placeholder="Enter step tagline" value="${data.tagline || ''}" maxlength="250" required>
+            <div class="help-text">
+              <i class="mdi mdi-information"></i>
+              <span>Brief description - single line only</span>
+            </div>
+          </div>
+          <input type="hidden" name="steps-${counter}-DELETE" id="id_steps-${counter}-DELETE" value="">
+        `;
+        break;
+        
+      case 'faq':
+        counter = ++faqCounter;
+        title = 'FAQ';
+        fieldsHTML = `
+          <input type="hidden" name="faqs-${counter}-id" value="${data.id || ''}">
+          <div class="form-group">
+            <label class="form-label">Question</label>
+            <input type="text" class="form-control" name="faqs-${counter}-question" placeholder="Enter question" value="${data.question || ''}" maxlength="300">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Answer</label>
+            <textarea class="form-control" name="faqs-${counter}-answer" placeholder="Enter answer" rows="4">${data.answer || ''}</textarea>
+          </div>
+          <input type="hidden" name="faqs-${counter}-DELETE" id="id_faqs-${counter}-DELETE" value="">
+        `;
+        break;
+    }
+    
+    const fieldHTML = `
+      <div class="formset-item" id="${formsetType}_${counter}">
+        <div class="formset-header">
+          <div class="formset-title">
+            <span class="formset-number">${counter}</span>
+            ${title} ${counter}
+          </div>
+          ${formsetType !== 'step' ? `
+            <button type="button" class="btn-remove-formset" onclick="removeFormsetItem('${formsetType}_${counter}', '${formsetType}')">
+              <i class="mdi mdi-delete"></i> Remove
+            </button>
+          ` : ''}
+        </div>
+        ${fieldsHTML}
+      </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', fieldHTML);
+    updateAddButton(formsetType);
+  }
+
+  function removeFormsetItem(itemId, formsetType) {
+    const item = document.getElementById(itemId);
+    if (item) {
+      // Mark for deletion
+      const deleteInput = item.querySelector(`input[name$="-DELETE"]`);
+      if (deleteInput) {
+        deleteInput.value = 'on';
+        console.log(`Marked ${formsetType} for deletion:`, itemId);
+      }
+      
+      // Hide the item
+      item.style.display = 'none';
+      
+      updateAddButton(formsetType);
+    }
+  }
+
+  function updateAddButton(formsetType) {
+    const maxForms = formsetType === 'step' ? 4 : formsetType === 'faq' ? 6 : 999;
+    const container = document.getElementById(`${formsetType}Formset`);
+    const visibleItems = container.querySelectorAll('.formset-item:not([style*="display: none"])');
+    const addBtn = formsetType === 'step' ? document.getElementById('addStepBtn') : 
+                   formsetType === 'faq' ? document.getElementById('addFaqBtn') : 
+                   document.querySelector(`[onclick="addFormsetItem('${formsetType}')"]`);
+    
+    if (addBtn) {
+      if (formsetType === 'step') {
+        addBtn.style.display = 'none';
+      } else if (visibleItems.length >= maxForms) {
+        addBtn.style.display = 'none';
+      } else {
+        addBtn.style.display = 'inline-flex';
+      }
+    }
+  }
+
+  function clearDynamicFields() {
+    document.getElementById('offerFormset').innerHTML = '';
+    document.getElementById('stepFormset').innerHTML = '';
+    document.getElementById('faqFormset').innerHTML = '';
+    offerCounter = 0;
+    stepCounter = 0;
+    faqCounter = 0;
+  }
+
+  // Load existing data for offers, steps, and FAQs from backend
+  function loadServiceData(serviceId) {
+    // Clear existing fields
+    clearDynamicFields();
+    
+    // AJAX call to fetch service data
+    fetch(`/api/service/${serviceId}/`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Load offers
+        if (data.offers && data.offers.length > 0) {
+          data.offers.forEach(offer => {
+            addFormsetItem('offer', {
+              id: offer.id,
+              title: offer.title,
+              description: offer.description
+            });
+          });
+        }
+        
+        // Load process steps - ensure exactly 4
+        if (data.steps && data.steps.length > 0) {
+          data.steps.forEach(step => {
+            addFormsetItem('step', {
+              id: step.id,
+              title: step.title,
+              tagline: step.tagline
+            });
+          });
+        }
+        
+        // If no steps exist, create 4 empty ones
+        if (!data.steps || data.steps.length === 0) {
+          for (let i = 0; i < 4; i++) {
+            addFormsetItem('step', {
+              title: '',
+              tagline: ''
+            });
+          }
+        }
+        
+        // Load FAQs
+        if (data.faqs && data.faqs.length > 0) {
+          data.faqs.forEach(faq => {
+            addFormsetItem('faq', {
+              id: faq.id,
+              question: faq.question,
+              answer: faq.answer
+            });
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error loading service data:', error);
+        showAlert('Error loading service data. Please refresh the page and try again.', 'error');
+      });
+  }
+
+  // Character count functionality
+  function updateCharacterCount(element, countElement, maxLength) {
+    const currentLength = element.value.length;
+    countElement.textContent = `${currentLength}/${maxLength} characters`;
+    
+    if (currentLength > maxLength * 0.9) {
+      countElement.classList.add('warning');
+      countElement.classList.remove('error');
+    } else if (currentLength > maxLength) {
+      countElement.classList.add('error');
+      countElement.classList.remove('warning');
+    } else {
+      countElement.classList.remove('warning', 'error');
+    }
+  }
+
+  // Delete Modal functionality
+  function openDeleteModal(id, name) {
+    // Set form action URL
+    document.getElementById('deleteForm').action = `{% url 'service_delete' 0 %}`.replace('0', id);
+    
+    document.getElementById('deleteServiceName').textContent = name;
+    deleteModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDeleteModal() {
+    deleteModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+  }
+
+  // AJAX form submission for update
+  document.getElementById('updateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('updateSubmitBtn');
+    submitBtn.classList.add('loading');
+    
+    const formData = new FormData(this);
+    
+    // Add management form data
+    formData.set('offers-TOTAL_FORMS', offerCounter.toString());
+    formData.set('offers-INITIAL_FORMS', '0');
+    
+    formData.set('steps-TOTAL_FORMS', stepCounter.toString());
+    formData.set('steps-INITIAL_FORMS', '0');
+    
+    formData.set('faqs-TOTAL_FORMS', faqCounter.toString());
+    formData.set('faqs-INITIAL_FORMS', '0');
+    
+    console.log('Submitting form with:', {
+      offers: offerCounter,
+      steps: stepCounter,
+      faqs: faqCounter
+    });
+    
+    fetch(`/edit/${currentServiceId}/`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      submitBtn.classList.remove('loading');
+      
+      if (data.success) {
+        // Update the service row in the table
+        updateServiceRow(currentServiceId);
+        
+        // Show success message
+        showAlert(data.message, 'success');
+        
+        // Close modal
+        closeUpdateModal();
+      } else {
+        // Show error message
+        document.getElementById('formErrors').textContent = data.message;
+        document.getElementById('formErrors').style.display = 'block';
+        
+        // Scroll to top to show errors
+        document.getElementById('formErrors').scrollIntoView({ behavior: 'smooth' });
+      }
+    })
+    .catch(error => {
+      submitBtn.classList.remove('loading');
+      console.error('Error:', error);
+      document.getElementById('formErrors').textContent = 'An error occurred while updating the service. Please try again.';
+      document.getElementById('formErrors').style.display = 'block';
+    });
+  });
+
+  // Update service row after successful update
+  function updateServiceRow(serviceId) {
+    // Reload the service data to update the row
+    fetch(`/api/service/${serviceId}/`)
+      .then(response => response.json())
+      .then(data => {
+        // Update the service name
+        const nameElement = document.getElementById(`service-name-${serviceId}`);
+        if (nameElement) {
+          nameElement.textContent = data.name;
+        }
+        
+        // Update the service description
+        const descElement = document.getElementById(`service-description-${serviceId}`);
+        if (descElement) {
+          descElement.textContent = data.description.length > 100 ? 
+            data.description.substring(0, 100) + '...' : data.description;
+        }
+        
+        // Update counts
+        const offersCount = document.getElementById(`offers-count-${serviceId}`);
+        const stepsCount = document.getElementById(`steps-count-${serviceId}`);
+        const faqsCount = document.getElementById(`faqs-count-${serviceId}`);
+        
+        if (offersCount) offersCount.textContent = data.offers.length;
+        if (stepsCount) stepsCount.textContent = data.steps.length;
+        if (faqsCount) faqsCount.textContent = data.faqs.length;
+        
+        // Update data attributes for search
+        const row = document.getElementById(`service-row-${serviceId}`);
+        if (row) {
+          row.setAttribute('data-name', data.name);
+          row.setAttribute('data-description', data.description);
+        }
+      })
+      .catch(error => {
+        console.error('Error updating service row:', error);
+      });
+  }
+
+  // Highlight text function
+  function highlightText(text, searchTerm) {
+    if (!searchTerm) return text;
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, '<span class="highlight">$1</span>');
+  }
+
+  // Remove highlighting
+  function removeHighlighting() {
+    const highlightedElements = document.querySelectorAll('.highlight');
+    highlightedElements.forEach(el => {
+      const parent = el.parentNode;
+      parent.replaceChild(document.createTextNode(el.textContent), el);
+      parent.normalize();
+    });
+  }
+
+  // Search functionality
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    
+    if (searchTerm) {
+      clearSearch.classList.add('show');
+    } else {
+      clearSearch.classList.remove('show');
+      removeHighlighting();
+    }
+
+    const rows = serviceTableBody.getElementsByTagName('tr');
+    let visibleCount = 0;
+
+    Array.from(rows).forEach(row => {
+      const name = row.getAttribute('data-name').toLowerCase();
+      const description = row.getAttribute('data-description').toLowerCase();
+      
+      if (name.includes(searchTerm) || description.includes(searchTerm)) {
+        row.style.display = '';
+        visibleCount++;
+        
+        // Highlight matching text
+        const nameElement = row.querySelector('.service-name');
+        const descriptionElement = row.querySelector('.service-description');
+        
+        if (nameElement) {
+          nameElement.innerHTML = highlightText(row.getAttribute('data-name'), searchTerm);
+        }
+        
+        if (descriptionElement) {
+          const fullDesc = row.getAttribute('data-description');
+          const truncated = fullDesc.split(' ').slice(0, 20).join(' ');
+          descriptionElement.innerHTML = highlightText(truncated, searchTerm);
+        }
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Show/hide no results message
+    if (visibleCount === 0 && searchTerm) {
+      noResults.style.display = 'block';
+      serviceTableBody.parentElement.style.display = 'none';
+    } else {
+      noResults.style.display = 'none';
+      serviceTableBody.parentElement.style.display = 'table';
+    }
+
+    // Update count
+    serviceCount.textContent = `${visibleCount} Service${visibleCount !== 1 ? 's' : ''}`;
+  });
+
+  clearSearch.addEventListener('click', function() {
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input'));
+    searchInput.focus();
+  });
+
+  // Close modal when clicking outside
+  window.addEventListener('click', function(event) {
+    if (event.target === updateModal) {
+      closeUpdateModal();
+    }
+    if (event.target === deleteModal) {
+      closeDeleteModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeUpdateModal();
+      closeDeleteModal();
+    }
+  });
+
+  // Initialize character count functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners for character count in update modal
+    const updateName = document.getElementById('updateName');
+    
+    if (updateName) {
+      updateName.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('updateNameCount'), 200);
+      });
+    }
+    
+    // Add event listener for file input to show clear button
+    const imageInput = document.getElementById('imageInput');
+    const imageActions = document.getElementById('imageActions');
+    
+    if (imageInput) {
+      imageInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+          imageActions.style.display = 'block';
+        } else {
+          imageActions.style.display = 'none';
+        }
+      });
+    }
+    
+    // Focus search input on page load
+    if (searchInput) {
+      searchInput.focus();
+    }
+  });
+</script>
+{% endblock %}

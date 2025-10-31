@@ -1,0 +1,513 @@
+
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+
+            <!-- tp-service-hero-area-start -->
+            <div class="tp-service-hero-area tp-service-hero-spacing p-relative z-index-1">
+               <span class="tp-service-hero-shape-2 p-absolute">
+                  <svg class="line-2" viewBox="0 0 402 339" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <circle cx="413.5" cy="413.5" r="353.5" transform="matrix(-1 0 0 1 820 0)" stroke="#F0F0F0" stroke-width="120" />
+                  </svg>
+               </span>
+             
+               <div class="container">
+                  <div class="row pb-45">
+                     <div class="col-lg-7">
+                        <div class="tp-service-hero-left p-relative z-index-1 mb-40">
+                           <h2 class="fs-70 fs-lg-60 fs-xs-40">Explore Services</h2>
+                           <span class="tp-service-hero-shape tpswing d-none d-sm-inline-block">
+                              <svg width="52" height="94" viewBox="0 0 52 94" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M1 16.1098C5.58433 24.0984 22.6118 44.5692 38.3295 38.0785C46.3521 34.5835 58.2264 23.6551 45.206 5.12554C40.2943 -1.86444 30.6673 -0.666183 25.559 14.1127C22.6118 22.6393 15.2441 43.0714 22.612 61.0456C26.5006 70.5321 38.1332 85.2111 49.1356 90.0043M49.1356 90.0043C44.0601 87.3414 32.8285 84.2126 28.5061 93M49.1356 90.0043C45.8611 88.1736 40.0979 80.8174 43.2414 66.0385M10.2322 38.0785C9.38015 41.6962 8.2675 54.4237 15.144 64.4094" stroke="#030303" stroke-width="1.5" />
+                              </svg>
+                           </span>
+                           <div class="tp-service-details-icon">
+                              <img class="tp-live-anim-spin" src="assets/img/breadcrumb/icon.png" alt="">
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-lg-5">
+                        <div class="tp-service-hero-right mt-55">
+                           <p class="fs-20 lh-140-per">We create brands that stand out, connect, and<br> leave a lasting impression. Whether you're<br> launching a new business or rebranding an<br> existing one, we craft visually compelling and<br> strategically driven brand identities that<br> capture your essence.</p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="tp-breadcrumb-wrap">
+                  <div class="container">
+                     <div class="row">
+                        <div class="col-12">
+                           <div class="tp-breadcrumb-list">
+                              <ul>
+                                 <li><a href="index.html">Home</a></li>
+                                 <li><span></span></li>
+                                 <li>Service Details</li>
+                              </ul>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- tp-service-hero-area-end -->
+
+            <!-- tp-banner-area-start -->
+            <div class="tp-about-me-banner scale-up-img">
+               <img class="img-cover scale-up" data-speed="0.4"  src="{{ service.image.url }}"  alt="About Thumbnail">
+            </div>
+            <!-- tp-banner-area-end -->
+            {% comment %} <style>
+               .tp-service-cst-slider {
+  overflow: hidden;
+}
+
+.tp-service-cst-slider .swiper-wrapper {
+  animation: slideLeft 20s linear infinite;
+  display: flex;
+  width: max-content;
+}
+
+.tp-service-cst-slider:hover .swiper-wrapper {
+  animation-play-state: paused;
+}
+
+@keyframes slideLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+            </style> {% endcomment %}
+            
+
+             <!-- tp-service-area-start  took from another service>>>>>>>>..--> 
+            <div class="tp-service-area pt-145">
+               <div class="container-fluid container-1524">
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="tp-service-cst-3-wrap">
+                           <h2 class="tp-section-title mb-65 tp-ff-dm fs-72 fs-xl-60 fs-lg-50 fw-600 tp-text-common-black-1">What We Offer</h2>
+                           <div class="swiper tp-service-cst-slider">
+                              <div class="swiper-wrapper">
+
+                                 {% for offer in service.offers.all %}
+                                 <div class="swiper-slide">
+                                    <div class="tp-service-cst-item p-relative">
+                                       <div class="tp-service-cst-thumb">
+                                         <img class="w-100"  src="{% static 'assets/img/service/ai/three.jpg' %}" alt="">
+                                       </div>
+                                       <div class="tp-service-cst-content tp-bg-common-white">
+                                          <h5 class="fw-600 fs-28 tp-ff-dm tp-text-common-black-1 mb-15"><a class="underline-black" href="service-details-2-light.html">{{ offer.title }}</a></h5>
+                                          <p class="tp-service-cst-item-border tp-ff-dm fs-18 lh-140-per tp-text-common-black-1">Finance consulting involves providing expert <br> advice to businesses, individuals, or organizations</p>
+                                          <a href="service-details-2-light.html" class="tp-left-right fw-700 tp-ff-dm fs-16 text-uppercase tp-text-common-black-1">
+                                             <span class="mr10 td-text d-inline-block mr-5">View Details</span>
+                                             <span class="tp-arrow-angle">
+                                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                   <path fill-rule="evenodd" clip-rule="evenodd" d="M2.41379 3.30208C5.97452 3.05821 10.6092 1.55558 14 0C12.4438 3.39014 10.9406 8.02425 10.6973 11.585L8.35765 6.59331L1.14783 13.8037C1.02165 13.9295 0.850656 14.0001 0.672431 14C0.539461 14 0.409486 13.9605 0.298934 13.8866C0.188382 13.8128 0.102217 13.7077 0.0513353 13.5849C0.000453949 13.462 -0.0128613 13.3269 0.013072 13.1965C0.0390053 13.066 0.103024 12.9462 0.197034 12.8522L7.40683 5.64241L2.41379 3.30208Z" fill="currentColor" />
+                                                   <path fill-rule="evenodd" clip-rule="evenodd" d="M2.41379 3.30208C5.97452 3.05821 10.6092 1.55558 14 0C12.4438 3.39014 10.9406 8.02425 10.6973 11.585L8.35765 6.59331L1.14783 13.8037C1.02165 13.9295 0.850656 14.0001 0.672431 14C0.539461 14 0.409486 13.9605 0.298934 13.8866C0.188382 13.8128 0.102217 13.7077 0.0513353 13.5849C0.000453949 13.462 -0.0128613 13.3269 0.013072 13.1965C0.0390053 13.066 0.103024 12.9462 0.197034 12.8522L7.40683 5.64241L2.41379 3.30208Z" fill="currentColor" />
+                                                </svg>
+                                             </span>
+                                          </a>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 {% endfor %}
+                                 
+
+
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div> 
+            <!-- tp-service-area-end -->
+
+            
+            
+
+            <!-- tp-service-details-area-start -->
+            {% comment %} <div class="tp-service-details-area pt-60">
+               <div class="container">
+                  <div class="row">
+                     <div class="col-12">
+                        <div class="tp-service-details-title-wrap mb-50">
+                           <h2 class="fs-500 fs-50 mb-5">Service Overview</h2>
+                           <span class="tp-service-details-border">
+                              <svg viewBox="0 0 1320 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M5 2.5L0 0.113249V5.88675L5 3.5V2.5ZM1315 3.5L1320 5.88675V0.113249L1315 2.5V3.5ZM4.5 3.5H1315.5V2.5H4.5V3.5Z" fill="#EEEEEE" />
+                              </svg>
+                           </span>
+                        </div>
+                     </div>
+                     <div class="col-lg-6">
+                        <div class="tp-service-details-content mr-105 mb-40">
+                           <p class="fs-18 lh-140-per mb-20">Branding design is theLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+ process of creating a unique identity that visually and  strategically represents a business. It includes logo design, color schemes, typography, and brand messaging to ensure consistency across all platforms.</p>
+                           
+                        </div>
+                     </div>
+                     <div class="col-lg-6">
+                        <div class="tp-service-details-content mb-40">
+                           <h5 class="fs-25 mb-25">Our Approach to Branding</h5>
+                           <ul>
+                              <li>
+                                 <i class="fa-regular fa-circle-check"></i>
+                                 <p><b>Discovery & Research –</b> Understanding your business, audience, and competition.</p>
+                              </li>
+                              <li>
+                                 <i class="fa-regular fa-circle-check"></i>
+                                 <p><b>Concept Development</b> Creating initial branding concepts and design ideas.</p>
+                              </li>
+                              <li>
+                                 <i class="fa-regular fa-circle-check"></i>
+                                 <p><b>Refinement & Testing –</b> Perfecting the visuals and ensuring they resonate with your audience.</p>
+                              </li>
+                              <li>
+                                 <i class="fa-regular fa-circle-check"></i>
+                                 <p><b>Final Implementation –</b> Delivering all branding assets with a detailed style guide.</p>
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div> {% endcomment %}
+            <div class="tp-service-details-area pt-140 pb-90">
+   <div class="container">
+      <div class="row">
+         <!-- Left Side: Main Service -->
+         <div class="col-lg-8">
+            <div class="tp-postbox-wrapper mr-110 mb-50">
+               <h2 class="fs-50 fs-sm-40 fs-xs-30 lh-120-per mb-55">{{ service.name }}</h2>
+               <div class="tp-blog-details-link-wrap mb-25">
+                  <div class="tp-blog-details-dates mr-20 mb-10">
+                     <span>Special Service</span>
+                     <span class="borders"></span>
+                     <span>{{ service.created_at|date }}</span>
+                  </div>
+               </div>
+               <div class="tp-blog-details-content mb-70">
+                  <p class="fs-18 lh-150-per">{{ service.description }}</p>
+               </div>
+
+               <div class="tp-blog-details-tag-wrap">
+                  <div class="tp-blog-details-tag mr-20 mb-10">
+                     <ul>
+                        {% for tag in service.tags.all %}
+                        <li><a href="#">{{ tag.name }}</a></li>
+                        {% endfor %}
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- Right Side: Other Services -->
+         <div class="col-lg-4">
+            <div class="tp-sidebar-wrap mb-50">
+               <div class="tp-sidebar-widget mb-30">
+                  <h3 class="tp-sidebar-widget-title mb-25">Other Services</h3>
+
+                  {% for other in other_services %}
+                  <div class="tp-sidebar-rc-post mb-15">
+                     <a href="#" class="tp-sidebar-rc-post-tag mb-15">Service</a>
+                     <h4 class="tp-sidebar-rc-post-title">
+                        <a class="underline-black" href="{% url 'service_detail' other.id  %}">{{ other.name }}</a>
+                     </h4>
+                     <span class="tp-sidebar-rc-post-dates">{{ other.created_date|date }}</span>
+                     {% if not forloop.last %}
+                     <span class="tp-sidebar-rc-border d-block mt-5">
+                        <svg viewBox="0 0 364 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M5 2.5L0 0.113249V5.88675L5 3.5V2.5ZM359 3.5L364 5.88675V0.113249L359 2.5V3.5ZM4.5 3.5H359.5V2.5H4.5V3.5Z" fill="#EEEEEE"/>
+                        </svg>
+                     </span>
+                     {% endif %}
+                  </div>
+                  {% endfor %}
+               </div>
+
+               <div class="tp-sidebar-banner bg-position" data-background="assets/img/blog/postbox/bg.jpg">
+                  <img class="mb-25" src="assets/img/blog/postbox/user.png" alt="">
+                  <h4 class="tp-text-common-black fs-25 mb-65">Ready to optimize your business strategy?</h4>
+                  <a href="contact-light.html" class="tp-btn-sm d-inline-block tp-left-right fw-500 tp-ff-heading fs-15 text-uppercase tp-text-common-white tp-bg-theme-primary tp-round-36">
+                     <span class="mr10 td-text d-inline-block mr-5">Let's Talk</span>
+                     <span class="tp-arrow-angle">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path fill-rule="evenodd" clip-rule="evenodd" d="M2.41379 3.30208C5.97452 3.05821 10.6092 1.55558 14 0C12.4438 3.39014 10.9406 8.02425 10.6973 11.585L8.35765 6.59331L1.14783 13.8037C1.02165 13.9295 0.850656 14.0001 0.672431 14C0.539461 14 0.409486 13.9605 0.298934 13.8866C0.188382 13.8128 0.102217 13.7077 0.0513353 13.5849C0.000453949 13.462 -0.0128613 13.3269 0.013072 13.1965C0.0390053 13.066 0.103024 12.9462 0.197034 12.8522L7.40683 5.64241L2.41379 3.30208Z" fill="currentColor"/>
+                        </svg>
+                     </span>
+                  </a>
+               </div>
+
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<style>
+   /* Spacing fix for "Other Services" sidebar */
+.tp-sidebar-rc-post {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.tp-sidebar-rc-post:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.tp-sidebar-rc-post-title {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.tp-sidebar-rc-post-dates {
+  display: block;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #777;
+}
+
+</style>
+
+            <!-- tp-service-details-area-end -->
+
+            <!-- tp-about-process-area -->
+            
+            <!-- tp-process-area-start -->
+            <div class="tp-process-area pt-110 pb-100 tp-bg-common-black p-relative z-index-1">
+               <img class="tp-awards-bg-shape" data-background="assets/img/breadcrumb/thumb-12.jpg" alt="">
+               <div class="container">
+                  <div class="row">
+                     <div class="col-lg-12">
+                        <div class="tp-process-pp-title-inner mb-30 text-center tp_fade_anim" data-delay=".3">
+                           <span class="tp-section-subtitle tp-section-subtitle-white tp-ff-heading fw-500 tp-text-common-white fs-16 mb-20"><span class="borders d-inline-block"></span>Working Process</span>
+                           <h2 class="fs-70 fs-sm-40 tp-text-common-white">Our Design Process<br> What’s We Do</h2>
+                        </div>
+                     </div>
+                     <div class="col-12 d-none d-lg-block">
+                        <div class="tp-process-pp-border">
+                           <svg viewBox="0 0 1320 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M5 2.5L0 0.113249V5.88675L5 3.5V2.5ZM1315 3.5L1320 5.88675V0.113249L1315 2.5V3.5ZM4.5 3.5H1315.5V2.5H4.5V3.5Z" fill="white" fill-opacity="0.1" />
+                           </svg>
+                        </div>
+                     </div>
+                     {% comment %} <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="tp-process-pp-item text-center mb-30 tp_fade_anim" data-delay=".3" data-fade-from="left">
+                           <span class="tp-process-pp-count fw-600 fs-18 mb-40 tp-text-common-black d-inline-block tp-bg-theme-primary">01</span>
+                           <h3 class="fs-25 tp-text-common-white lh-140-per mb-20">Research &<br> Analysis</h3>
+                           <p class="fs-18 lh-140-per tp-text-grey-2">Conduct user research (interviews, surveys, analytics).</p>
+                        </div>
+                     </div> {% endcomment %}
+                      {% for step in process_steps %}
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="tp-process-pp-item text-center mb-30 tp_fade_anim" data-delay=".{{ forloop.counter }}" data-fade-from="left">
+            <span class="tp-process-pp-count fw-600 fs-18 mb-40 tp-text-common-white d-inline-block tp-bg-theme-primary">
+                {{ forloop.counter|stringformat:"02d" }}
+            </span>
+            <h3 class="fs-25 tp-text-common-white lh-140-per mb-20">{{ step.title }}</h3>
+            <p class="fs-18 lh-140-per tp-text-grey-2">{{ step.tagline }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+                     <div class="col-lg-12">
+                        <div class="tp-skill-wd-bottom text-center mt-35 tp_fade_anim" data-delay=".5" data-fade-from="bottom" data-ease="bounce">
+                           <p class="tp-skill-wd-para tp-ff-heading fw-500 fs-18 tp-text-common-white">Don’t hesitate collaborate with expertise- 
+                              <a href="contact-light.html" class="ml-40 d-inline-block lh-0 tp-round-26 fs-15 text-uppercase ls-0 tp-btn-switch-animation tp-text-theme-primary tp-ff-heading fw-500">
+                                 <span class="d-flex align-items-center justify-content-center">
+                                    <span class="btn-text" style="color: #eee;">Let’s Talk</span>
+                                    <span class="btn-icon">
+                                       <svg width="25" height="10" viewBox="0 0 25 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M18.675 9.91054L24.72 5.63362C24.806 5.56483 24.8766 5.47086 24.9255 5.36023C24.9744 5.2496 25 5.12579 25 5C25 4.87421 24.9744 4.7504 24.9255 4.63977C24.8766 4.52914 24.806 4.43518 24.72 4.36638L18.675 0.0894619C18.5572 0.0111909 18.4215 -0.0168364 18.2892 0.00979851C18.157 0.0364334 18.0358 0.116215 17.9446 0.236567C17.8535 0.356918 17.7977 0.510993 17.7859 0.674501C17.7742 0.838009 17.8072 1.00165 17.8798 1.13963L19.633 4.26665L0.598757 4.26665C0.439957 4.26665 0.287661 4.34391 0.175371 4.48144C0.0630817 4.61897 0 4.8055 0 5C0 5.1945 0.0630817 5.38103 0.175371 5.51856C0.287661 5.65609 0.439957 5.73335 0.598757 5.73335L19.633 5.73335L17.8798 8.86038C17.8072 8.99835 17.7742 9.16199 17.7859 9.3255C17.7977 9.48901 17.8535 9.64308 17.9446 9.76343C18.0358 9.88378 18.157 9.96357 18.2892 9.9902C18.4215 10.0168 18.5572 9.98881 18.675 9.91054Z" fill="currentColor" />
+                                       </svg>
+                                    </span>
+                                    <span class="btn-icon">
+                                       <svg width="25" height="10" viewBox="0 0 25 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M18.675 9.91054L24.72 5.63362C24.806 5.56483 24.8766 5.47086 24.9255 5.36023C24.9744 5.2496 25 5.12579 25 5C25 4.87421 24.9744 4.7504 24.9255 4.63977C24.8766 4.52914 24.806 4.43518 24.72 4.36638L18.675 0.0894619C18.5572 0.0111909 18.4215 -0.0168364 18.2892 0.00979851C18.157 0.0364334 18.0358 0.116215 17.9446 0.236567C17.8535 0.356918 17.7977 0.510993 17.7859 0.674501C17.7742 0.838009 17.8072 1.00165 17.8798 1.13963L19.633 4.26665L0.598757 4.26665C0.439957 4.26665 0.287661 4.34391 0.175371 4.48144C0.0630817 4.61897 0 4.8055 0 5C0 5.1945 0.0630817 5.38103 0.175371 5.51856C0.287661 5.65609 0.439957 5.73335 0.598757 5.73335L19.633 5.73335L17.8798 8.86038C17.8072 8.99835 17.7742 9.16199 17.7859 9.3255C17.7977 9.48901 17.8535 9.64308 17.9446 9.76343C18.0358 9.88378 18.157 9.96357 18.2892 9.9902C18.4215 10.0168 18.5572 9.98881 18.675 9.91054Z" fill="currentColor" />
+                                       </svg>
+                                    </span>
+                                </span> 
+                              </a>
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- tp-process-area-end -->
+
+            <!-- tp-faq-area-start -->
+            <div class="tp-faq-area pt-140 pb-115">
+               <div class="container">
+                  <div class="row justify-content-center">
+                     <div class="col-lg-8">
+                        <div class="tp-faq-wrap">
+                           <div class="text-center mb-45 tp_fade_anim" data-delay=".3">
+                              <span class="tp-section-subtitle tp-ff-heading fw-500 tp-text-common-black fs-16 mb-20"><span class="borders d-inline-block"></span>General Questions</span>
+                              <h2 class="tp-section-title fs-70 fs-xl-60 fs-lg-50 fs-xs-40">Ask & Question</h2>
+                           </div>
+                           <div class="tp-custom-accordion">
+                              {% comment %} <div class="accordion" id="general_faqaccordion">
+                                 <div class="accordion-item tp-faq-active mb-25 tp_fade_anim" data-delay=".3">
+                                    <h2 class="accordion-header p-relative" id="order_one">
+                                       <button class="accordion-button tp-faq-btn" type="button" data-bs-toggle="collapse" data-bs-target="#order__collapse_one" aria-expanded="true" aria-controls="order__collapse_one">
+                                          What is branding, and why is it important?
+                                          <span class="accordion-btn">
+                                             <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2.7 4.93333L0.2 1.6C-0.294427 0.940764 0.175955 0 1 0H6C6.82405 0 7.29443 0.940764 6.8 1.6L4.3 4.93333C3.9 5.46667 3.1 5.46667 2.7 4.93333Z" fill="currentColor" />
+                                             </svg>
+                                          </span>
+                                       </button>
+                                    </h2>
+                                    <div id="order__collapse_one" class="accordion-collapse collapse show" aria-labelledby="order_one" data-bs-parent="#general_faqaccordion">
+                                       <div class="accordion-body tp-faq-details-para">
+                                          <p>Branding is the process of creating a unique identity for your business, <span class="text-black">including visuals, messaging, and positioning.</span> It helps build trust, recognition, and emotional connections with your audience.</p>
+                                          <span class="tp-faq-list-title d-inline-block mb-10">Our branding packages typically include:</span>
+                                          <ul>
+                                             <li>1. Brand Strategy & Positioning.</li>
+                                             <li>2. Logo & Visual Identity</li>
+                                             <li>3. Marketing & Collateral Design</li>
+                                          </ul>
+                                       </div>
+                                    </div>
+                                 </div>
+                                
+
+                                 
+                                 </div>
+                              </div> {% endcomment %}
+
+                              <div class="accordion" id="general_faqaccordion">
+    {% for faq in service.faqs.all %}
+    <div class="accordion-item mb-25 tp_fade_anim" data-delay=".{{ forloop.counter }}">
+        <h2 class="accordion-header p-relative" id="faq_{{ forloop.counter }}">
+            <button class="accordion-button tp-faq-btn {% if not forloop.first %}collapsed{% endif %}" 
+                    type="button" 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#collapse_{{ forloop.counter }}" 
+                    aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" 
+                    aria-controls="collapse_{{ forloop.counter }}">
+                {{ faq.question }}
+                <span class="accordion-btn">
+                    <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.7 4.93333L0.2 1.6C-0.294427 0.940764 0.175955 0 1 0H6C6.82405 0 7.29443 0.940764 6.8 1.6L4.3 4.93333C3.9 5.46667 3.1 5.46667 2.7 4.93333Z" fill="currentColor" />
+                    </svg>
+                </span>
+            </button>
+        </h2>
+        <div id="collapse_{{ forloop.counter }}" 
+             class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" 
+             aria-labelledby="faq_{{ forloop.counter }}" 
+             data-bs-parent="#general_faqaccordion">
+            <div class="accordion-body tp-faq-details-para">
+                <p>{{ faq.answer|safe }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No FAQs available for this service.</p>
+    {% endfor %}
+</div>
+
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- tp-faq-area-end -->
+          
+
+            <!-- tp-text-slider-area-start -->
+            {% comment %} <div class="tp-text-slider-area pt-25 pb-25 tp-bg-theme-primary">
+               <div class="swiper-container tp-text-slider-active">
+                  <div class="swiper-wrapper slide-transtion">
+                     <div class="swiper-slide">
+                        <div class="tp-text-slider-item">
+                           <span>Design</span>
+                           <span class="icons">
+                              <svg width="68" height="12" viewBox="0 0 68 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M59.416 11.8926L67.62 6.76034C67.7367 6.67779 67.8325 6.56504 67.8989 6.43228C67.9652 6.29953 67.9999 6.15095 67.9999 6C67.9999 5.84905 67.9652 5.70048 67.8989 5.56772C67.8325 5.43496 67.7367 5.32221 67.62 5.23966L59.416 0.107354C59.2561 0.0134291 59.0719 -0.0202036 58.8925 0.0117582C58.713 0.04372 58.5485 0.139459 58.4248 0.28388C58.3011 0.428302 58.2254 0.613192 58.2094 0.809402C58.1935 1.00561 58.2383 1.20198 58.3369 1.36755L60.7161 5.11998L0.812592 5.11998C0.597076 5.11998 0.390396 5.21269 0.238007 5.37773C0.0856171 5.54277 0 5.7666 0 6C0 6.2334 0.0856171 6.45724 0.238007 6.62227C0.390396 6.78731 0.597076 6.88003 0.812592 6.88003C0.812592 6.88003 49.0381 6.88003 60.7161 6.88003L58.3369 10.6325C58.2383 10.798 58.1935 10.9944 58.2094 11.1906C58.2254 11.3868 58.3011 11.5717 58.4248 11.7161C58.5485 11.8605 58.713 11.9563 58.8925 11.9882C59.0719 12.0202 59.2561 11.9866 59.416 11.8926Z" fill="#030303" />
+                              </svg>
+                           </span>
+                           <span>development</span>
+                           <span class="borders"></span>
+                        </div>
+                     </div>
+                     <div class="swiper-slide">
+                        <div class="tp-text-slider-item">
+                           <span>Design</span>
+                           <span class="icons">
+                              <svg width="68" height="12" viewBox="0 0 68 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M59.416 11.8926L67.62 6.76034C67.7367 6.67779 67.8325 6.56504 67.8989 6.43228C67.9652 6.29953 67.9999 6.15095 67.9999 6C67.9999 5.84905 67.9652 5.70048 67.8989 5.56772C67.8325 5.43496 67.7367 5.32221 67.62 5.23966L59.416 0.107354C59.2561 0.0134291 59.0719 -0.0202036 58.8925 0.0117582C58.713 0.04372 58.5485 0.139459 58.4248 0.28388C58.3011 0.428302 58.2254 0.613192 58.2094 0.809402C58.1935 1.00561 58.2383 1.20198 58.3369 1.36755L60.7161 5.11998L0.812592 5.11998C0.597076 5.11998 0.390396 5.21269 0.238007 5.37773C0.0856171 5.54277 0 5.7666 0 6C0 6.2334 0.0856171 6.45724 0.238007 6.62227C0.390396 6.78731 0.597076 6.88003 0.812592 6.88003C0.812592 6.88003 49.0381 6.88003 60.7161 6.88003L58.3369 10.6325C58.2383 10.798 58.1935 10.9944 58.2094 11.1906C58.2254 11.3868 58.3011 11.5717 58.4248 11.7161C58.5485 11.8605 58.713 11.9563 58.8925 11.9882C59.0719 12.0202 59.2561 11.9866 59.416 11.8926Z" fill="#030303" />
+                              </svg>
+                           </span>
+                           <span>development</span>
+                           <span class="borders"></span>
+                        </div>
+                     </div>
+                     <div class="swiper-slide">
+                        <div class="tp-text-slider-item">
+                           <span>Research</span>
+                           <span class="icons">
+                              <svg width="68" height="12" viewBox="0 0 68 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M59.416 11.8926L67.62 6.76034C67.7367 6.67779 67.8325 6.56504 67.8989 6.43228C67.9652 6.29953 67.9999 6.15095 67.9999 6C67.9999 5.84905 67.9652 5.70048 67.8989 5.56772C67.8325 5.43496 67.7367 5.32221 67.62 5.23966L59.416 0.107354C59.2561 0.0134291 59.0719 -0.0202036 58.8925 0.0117582C58.713 0.04372 58.5485 0.139459 58.4248 0.28388C58.3011 0.428302 58.2254 0.613192 58.2094 0.809402C58.1935 1.00561 58.2383 1.20198 58.3369 1.36755L60.7161 5.11998L0.812592 5.11998C0.597076 5.11998 0.390396 5.21269 0.238007 5.37773C0.0856171 5.54277 0 5.7666 0 6C0 6.2334 0.0856171 6.45724 0.238007 6.62227C0.390396 6.78731 0.597076 6.88003 0.812592 6.88003C0.812592 6.88003 49.0381 6.88003 60.7161 6.88003L58.3369 10.6325C58.2383 10.798 58.1935 10.9944 58.2094 11.1906C58.2254 11.3868 58.3011 11.5717 58.4248 11.7161C58.5485 11.8605 58.713 11.9563 58.8925 11.9882C59.0719 12.0202 59.2561 11.9866 59.416 11.8926Z" fill="#030303" />
+                              </svg>
+                           </span>
+                           <span>development</span>
+                           <span class="borders"></span>
+                        </div>
+                     </div>
+                     <div class="swiper-slide">
+                        <div class="tp-text-slider-item">
+                           <span>Design</span>
+                           <span class="icons">
+                              <svg width="68" height="12" viewBox="0 0 68 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M59.416 11.8926L67.62 6.76034C67.7367 6.67779 67.8325 6.56504 67.8989 6.43228C67.9652 6.29953 67.9999 6.15095 67.9999 6C67.9999 5.84905 67.9652 5.70048 67.8989 5.56772C67.8325 5.43496 67.7367 5.32221 67.62 5.23966L59.416 0.107354C59.2561 0.0134291 59.0719 -0.0202036 58.8925 0.0117582C58.713 0.04372 58.5485 0.139459 58.4248 0.28388C58.3011 0.428302 58.2254 0.613192 58.2094 0.809402C58.1935 1.00561 58.2383 1.20198 58.3369 1.36755L60.7161 5.11998L0.812592 5.11998C0.597076 5.11998 0.390396 5.21269 0.238007 5.37773C0.0856171 5.54277 0 5.7666 0 6C0 6.2334 0.0856171 6.45724 0.238007 6.62227C0.390396 6.78731 0.597076 6.88003 0.812592 6.88003C0.812592 6.88003 49.0381 6.88003 60.7161 6.88003L58.3369 10.6325C58.2383 10.798 58.1935 10.9944 58.2094 11.1906C58.2254 11.3868 58.3011 11.5717 58.4248 11.7161C58.5485 11.8605 58.713 11.9563 58.8925 11.9882C59.0719 12.0202 59.2561 11.9866 59.416 11.8926Z" fill="#030303" />
+                              </svg>
+                           </span>
+                           <span>Wireframe</span>
+                           <span class="borders"></span>
+                        </div>
+                     </div>
+                     <div class="swiper-slide">
+                        <div class="tp-text-slider-item">
+                           <span>High Fidelity</span>
+                           <span class="icons">
+                              <svg width="68" height="12" viewBox="0 0 68 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M59.416 11.8926L67.62 6.76034C67.7367 6.67779 67.8325 6.56504 67.8989 6.43228C67.9652 6.29953 67.9999 6.15095 67.9999 6C67.9999 5.84905 67.9652 5.70048 67.8989 5.56772C67.8325 5.43496 67.7367 5.32221 67.62 5.23966L59.416 0.107354C59.2561 0.0134291 59.0719 -0.0202036 58.8925 0.0117582C58.713 0.04372 58.5485 0.139459 58.4248 0.28388C58.3011 0.428302 58.2254 0.613192 58.2094 0.809402C58.1935 1.00561 58.2383 1.20198 58.3369 1.36755L60.7161 5.11998L0.812592 5.11998C0.597076 5.11998 0.390396 5.21269 0.238007 5.37773C0.0856171 5.54277 0 5.7666 0 6C0 6.2334 0.0856171 6.45724 0.238007 6.62227C0.390396 6.78731 0.597076 6.88003 0.812592 6.88003C0.812592 6.88003 49.0381 6.88003 60.7161 6.88003L58.3369 10.6325C58.2383 10.798 58.1935 10.9944 58.2094 11.1906C58.2254 11.3868 58.3011 11.5717 58.4248 11.7161C58.5485 11.8605 58.713 11.9563 58.8925 11.9882C59.0719 12.0202 59.2561 11.9866 59.416 11.8926Z" fill="#030303" />
+                              </svg>
+                           </span>
+                           <span>Design</span>
+                           <span class="borders"></span>
+                        </div>
+                     </div>
+                     <div class="swiper-slide">
+                        <div class="tp-text-slider-item">
+                           <span>Design</span>
+                           <span class="icons">
+                              <svg width="68" height="12" viewBox="0 0 68 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                 <path d="M59.416 11.8926L67.62 6.76034C67.7367 6.67779 67.8325 6.56504 67.8989 6.43228C67.9652 6.29953 67.9999 6.15095 67.9999 6C67.9999 5.84905 67.9652 5.70048 67.8989 5.56772C67.8325 5.43496 67.7367 5.32221 67.62 5.23966L59.416 0.107354C59.2561 0.0134291 59.0719 -0.0202036 58.8925 0.0117582C58.713 0.04372 58.5485 0.139459 58.4248 0.28388C58.3011 0.428302 58.2254 0.613192 58.2094 0.809402C58.1935 1.00561 58.2383 1.20198 58.3369 1.36755L60.7161 5.11998L0.812592 5.11998C0.597076 5.11998 0.390396 5.21269 0.238007 5.37773C0.0856171 5.54277 0 5.7666 0 6C0 6.2334 0.0856171 6.45724 0.238007 6.62227C0.390396 6.78731 0.597076 6.88003 0.812592 6.88003C0.812592 6.88003 49.0381 6.88003 60.7161 6.88003L58.3369 10.6325C58.2383 10.798 58.1935 10.9944 58.2094 11.1906C58.2254 11.3868 58.3011 11.5717 58.4248 11.7161C58.5485 11.8605 58.713 11.9563 58.8925 11.9882C59.0719 12.0202 59.2561 11.9866 59.416 11.8926Z" fill="#030303" />
+                              </svg>
+                           </span>
+                           <span>development</span>
+                           <span class="borders"></span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+             {% endcomment %}
+           
+            <!-- tp-text-slider-area-end -->
+
+{% endblock %}

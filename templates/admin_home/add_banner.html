@@ -1,0 +1,652 @@
+{% extends 'admin_home/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-banner-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    margin-bottom: 30px;
+  }
+
+  .page-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .page-header p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .form-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    color: white;
+    text-align: center;
+  }
+
+  .form-header i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+  }
+
+  .form-header h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .form-header p {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .form-body {
+    padding: 40px;
+  }
+
+  .form-section {
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #f1f3f5;
+  }
+
+  .form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title i {
+    color: #3498db;
+    font-size: 22px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    font-family: inherit;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  /* Fixed Alignment for Timer Checkbox */
+  .form-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .form-check-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-top: 1px;
+  }
+
+  .form-check-input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-top: 2px;
+  }
+
+  .help-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .help-text i {
+    font-size: 14px;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 2px solid #f1f3f5;
+  }
+
+  .btn {
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    flex: 1;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: #e9ecef;
+    color: #495057;
+    flex: 1;
+  }
+
+  .btn-secondary:hover {
+    background: #dee2e6;
+  }
+
+  .alert {
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .alert-danger {
+    background: #fee;
+    border: 1px solid #fcc;
+    color: #c00;
+  }
+
+  .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+  }
+
+  .errorlist li {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .occasion-toggle {
+    display: none;
+  }
+
+  .occasion-toggle.show {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .form-body {
+      padding: 30px 20px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+
+<div class="add-banner-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h2>{{ action }} Promotional Banner</h2>
+    <p>Create eye-catching promotional banners for special occasions</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <div class="form-header">
+      <i class="mdi mdi-billboard"></i>
+      <h3>{{ action }} Banner</h3>
+      <p>Fill in the details below to {{ action|lower }} a promotional banner</p>
+    </div>
+
+    <div class="form-body">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+            <i class="mdi mdi-alert-circle"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="POST" id="bannerForm">
+        {% csrf_token %}
+        
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-information"></i>
+            <span>Basic Information</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                Title<span class="required">*</span>
+              </label>
+              {{ form.title }}
+              {% if form.title.errors %}
+                <ul class="errorlist">
+                  {% for error in form.title.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              <div class="help-text">
+                <i class="mdi mdi-information"></i>
+                <span>Main banner title (e.g., "Black Friday sale")</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Subtitle</label>
+              {{ form.subtitle }}
+              {% if form.subtitle.errors %}
+                <ul class="errorlist">
+                  {% for error in form.subtitle.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              <div class="help-text">
+                <i class="mdi mdi-information"></i>
+                <span>Optional subtitle text</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                Occasion<span class="required">*</span>
+              </label>
+              {{ form.occasion }}
+              {% if form.occasion.errors %}
+                <ul class="errorlist">
+                  {% for error in form.occasion.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+
+            <div class="form-group occasion-toggle" id="customOccasionGroup">
+              <label class="form-label">
+                Custom Occasion Name<span class="required">*</span>
+              </label>
+              {{ form.custom_occasion }}
+              {% if form.custom_occasion.errors %}
+                <ul class="errorlist">
+                  {% for error in form.custom_occasion.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Status<span class="required">*</span>
+              </label>
+              {{ form.status }}
+              {% if form.status.errors %}
+                <ul class="errorlist">
+                  {% for error in form.status.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Offer Details Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-tag"></i>
+            <span>Offer Details</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                Discount Text<span class="required">*</span>
+              </label>
+              {{ form.discount_text }}
+              {% if form.discount_text.errors %}
+                <ul class="errorlist">
+                  {% for error in form.discount_text.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              <div class="help-text">
+                <i class="mdi mdi-information"></i>
+                <span>Large discount display (e.g., "80% OFF")</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Priority<span class="required">*</span>
+              </label>
+              {{ form.priority }}
+              {% if form.priority.errors %}
+                <ul class="errorlist">
+                  {% for error in form.priority.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              <div class="help-text">
+                <i class="mdi mdi-information"></i>
+                <span>Higher number = higher priority (0-100)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Offer Description<span class="required">*</span>
+            </label>
+            {{ form.offer_description }}
+            {% if form.offer_description.errors %}
+              <ul class="errorlist">
+                {% for error in form.offer_description.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+            <div class="help-text">
+              <i class="mdi mdi-information"></i>
+              <span>Brief description of what the offer includes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timer Settings Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-clock"></i>
+            <span>Timer Settings</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="form-check">
+                {{ form.show_timer }}
+                <label class="form-check-label" for="{{ form.show_timer.id_for_label }}">
+                  Show Countdown Timer
+                </label>
+              </div>
+              <div class="help-text">
+                <i class="mdi mdi-information"></i>
+                <span>Display a live countdown timer on the banner</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                End Date & Time<span class="required">*</span>
+              </label>
+              {{ form.end_date }}
+              {% if form.end_date.errors %}
+                <ul class="errorlist">
+                  {% for error in form.end_date.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              <div class="help-text">
+                <i class="mdi mdi-information"></i>
+                <span>When should this offer expire?</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Customization Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-palette"></i>
+            <span>Visual Customization</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                Background Color<span class="required">*</span>
+              </label>
+              {{ form.background_color }}
+              {% if form.background_color.errors %}
+                <ul class="errorlist">
+                  {% for error in form.background_color.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Text Color<span class="required">*</span>
+              </label>
+              {{ form.text_color }}
+              {% if form.text_color.errors %}
+                <ul class="errorlist">
+                  {% for error in form.text_color.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Accent Color<span class="required">*</span>
+              </label>
+              {{ form.accent_color }}
+              {% if form.accent_color.errors %}
+                <ul class="errorlist">
+                  {% for error in form.accent_color.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Call to Action Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-cursor-pointer"></i>
+            <span>Call to Action</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                Button Text<span class="required">*</span>
+              </label>
+              {{ form.cta_text }}
+              {% if form.cta_text.errors %}
+                <ul class="errorlist">
+                  {% for error in form.cta_text.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Button Link<span class="required">*</span>
+              </label>
+              {{ form.cta_link }}
+              {% if form.cta_link.errors %}
+                <ul class="errorlist">
+                  {% for error in form.cta_link.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Additional Information</label>
+            {{ form.additional_info }}
+            {% if form.additional_info.errors %}
+              <ul class="errorlist">
+                {% for error in form.additional_info.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+            <div class="help-text">
+              <i class="mdi mdi-information"></i>
+              <span>Optional extra info (e.g., "30-day money-back guarantee")</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+            <i class="mdi mdi-arrow-left"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <i class="mdi mdi-check"></i>
+            {{ action }} Banner
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle custom occasion field
+  const occasionSelect = document.getElementById('{{ form.occasion.id_for_label }}');
+  const customOccasionGroup = document.getElementById('customOccasionGroup');
+
+  function toggleCustomOccasion() {
+    if (occasionSelect.value === 'custom') {
+      customOccasionGroup.classList.add('show');
+    } else {
+      customOccasionGroup.classList.remove('show');
+    }
+  }
+
+  // Initial check
+  toggleCustomOccasion();
+
+  // Listen for changes
+  occasionSelect.addEventListener('change', toggleCustomOccasion);
+
+  // Form submission
+  document.getElementById('bannerForm').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
+    submitBtn.disabled = true;
+  });
+</script>
+{% endblock %}

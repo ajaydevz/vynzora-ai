@@ -1,0 +1,694 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-tech-container {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .btn-back {
+    padding: 12px 24px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-back:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+
+  .tech-form-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .tech-form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+  }
+
+  .tech-form-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tech-form-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #e67e22;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  /* File input styling */
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-input-custom {
+    padding: 20px;
+    border: 2px dashed #e9ecef;
+    border-radius: 10px;
+    background: #f8f9fa;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6c757d;
+  }
+
+  .file-input-custom:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .file-input-custom.has-file {
+    border-color: #27ae60;
+    background: #e8f5e8;
+    color: #27ae60;
+  }
+
+  .file-input-custom.error {
+    border-color: #e74c3c;
+    background: #fdeded;
+  }
+
+  .image-preview {
+    margin-top: 20px;
+    text-align: center;
+    display: none;
+  }
+
+  .image-preview.show {
+    display: block;
+  }
+
+  .preview-image {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    object-fit: contain;
+    background: #f8f9fa;
+    padding: 15px;
+  }
+
+  .preview-info {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn-form {
+    flex: 1;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-cancel {
+    background: #e9ecef;
+    color: #495057;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-submit:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .recommended-size {
+    background: #e3f2fd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    border-left: 4px solid #3498db;
+  }
+
+  .recommended-size h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .recommended-size p {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0;
+  }
+
+  .tech-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .tech-category {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tech-category:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .tech-category.active {
+    border-color: #27ae60;
+    background: #e8f5e8;
+  }
+
+  .tech-category i {
+    font-size: 20px;
+    color: #6c757d;
+    margin-bottom: 5px;
+  }
+
+  .tech-category span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .add-tech-container {
+      margin: 0 15px;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .tech-form-body {
+      padding: 20px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn-form {
+      width: 100%;
+    }
+
+    .preview-image {
+      max-width: 100px;
+      max-height: 100px;
+    }
+
+    .tech-categories {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+  }
+
+  @media (max-width: 576px) {
+    .header-left h2 {
+      font-size: 20px;
+    }
+
+    .tech-form-header {
+      padding: 20px;
+    }
+
+    .tech-form-header h3 {
+      font-size: 16px;
+    }
+
+    .tech-categories {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<div class="add-tech-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Add Technology</h2>
+      <p>Add a new technology to showcase your tech stack</p>
+    </div>
+    <a href="{% url 'view_technologies' %}" class="btn-back">
+      <i class="mdi mdi-arrow-left"></i>
+      Back to Technologies
+    </a>
+  </div>
+
+  <!-- Technology Form Card -->
+  <div class="tech-form-card">
+    <div class="tech-form-header">
+      <h3>
+        <i class="mdi mdi-laptop"></i>
+        Technology Information
+      </h3>
+    </div>
+
+    <div class="tech-form-body">
+      <form method="POST" enctype="multipart/form-data" id="techForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label class="form-label">
+            Technology Name
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="name" 
+            id="techName" 
+            placeholder="Enter technology name (e.g., React, Python, AWS)"
+            maxlength="50"
+          >
+          <div class="character-count" id="nameCount">0/50 characters</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Technology Icon<span class="required">*</span>
+          </label>
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              class="form-control" 
+              name="logo" 
+              id="imageInput"
+              accept="image/*"
+              required
+            >
+            <div class="file-input-custom" id="fileInputCustom">
+              <i class="mdi mdi-cloud-upload" style="font-size: 24px; margin-bottom: 8px;"></i>
+              <div>Click to browse or drag & drop a technology icon</div>
+              <small>Supports: PNG, SVG (Max: 2MB)</small>
+            </div>
+          </div>
+          
+          <div class="image-preview" id="imagePreview">
+            <h4 style="font-size: 14px; color: #2c3e50; margin-bottom: 10px;">Icon Preview</h4>
+            <img src="" alt="Preview" class="preview-image" id="previewImage">
+            <div class="preview-info" id="previewInfo"></div>
+          </div>
+
+          <div class="recommended-size">
+            <h5>
+              <i class="mdi mdi-information"></i>
+              Recommended Icon Specifications
+            </h5>
+            <p>For best results, upload square icons with transparent backgrounds. Optimal dimensions are 128x128 pixels or 256x256 pixels. SVG format is preferred for scalability.</p>
+          </div>
+        </div>
+
+        {% comment %} <div class="form-group">
+          <label class="form-label">
+            Technology Category (Optional)
+          </label>
+          <div class="tech-categories">
+            <div class="tech-category" data-category="frontend">
+              <i class="mdi mdi-monitor"></i>
+              <span>Frontend</span>
+            </div>
+            <div class="tech-category" data-category="backend">
+              <i class="mdi mdi-server"></i>
+              <span>Backend</span>
+            </div>
+            <div class="tech-category" data-category="database">
+              <i class="mdi mdi-database"></i>
+              <span>Database</span>
+            </div>
+            <div class="tech-category" data-category="devops">
+              <i class="mdi mdi-cog"></i>
+              <span>DevOps</span>
+            </div>
+            <div class="tech-category" data-category="mobile">
+              <i class="mdi mdi-cellphone"></i>
+              <span>Mobile</span>
+            </div>
+            <div class="tech-category" data-category="other">
+              <i class="mdi mdi-puzzle"></i>
+              <span>Other</span>
+            </div>
+          </div>
+          <input type="hidden" name="category" id="techCategory">
+        </div> {% endcomment %}
+
+        <div class="form-actions">
+          <a href="{% url 'view_technologies' %}" class="btn-form btn-cancel">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </a>
+          <button type="submit" class="btn-form btn-submit" id="submitBtn">
+            <i class="mdi mdi-check"></i>
+            Add Technology
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Form elements
+    const form = document.getElementById('techForm');
+    const techName = document.getElementById('techName');
+    const imageInput = document.getElementById('imageInput');
+    const fileInputCustom = document.getElementById('fileInputCustom');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const previewInfo = document.getElementById('previewInfo');
+    const submitBtn = document.getElementById('submitBtn');
+    const nameCount = document.getElementById('nameCount');
+    const techCategory = document.getElementById('techCategory');
+    const categoryButtons = document.querySelectorAll('.tech-category');
+
+    // Initialize character count
+    updateCharacterCount(techName, nameCount, 50);
+
+    // Character count functionality
+    function updateCharacterCount(element, countElement, maxLength) {
+      const currentLength = element.value.length;
+      countElement.textContent = `${currentLength}/${maxLength} characters`;
+      
+      if (currentLength > maxLength * 0.9) {
+        countElement.classList.add('warning');
+        countElement.classList.remove('error');
+      } else if (currentLength > maxLength) {
+        countElement.classList.add('error');
+        countElement.classList.remove('warning');
+      } else {
+        countElement.classList.remove('warning', 'error');
+      }
+    }
+
+    // Event listener for character count
+    techName.addEventListener('input', function() {
+      updateCharacterCount(this, nameCount, 50);
+    });
+
+    // Category selection functionality
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Set the category value
+        techCategory.value = this.getAttribute('data-category');
+      });
+    });
+
+    // Image preview functionality
+    function setupImagePreview() {
+      imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+          // Validate file type
+          if (!file.type.match('image.*')) {
+            alert('Please select a valid image file (PNG, SVG, etc.)');
+            resetImagePreview();
+            return;
+          }
+          
+          // Validate file size (max 2MB for icons)
+          if (file.size > 2 * 1024 * 1024) {
+            alert('Icon size should be less than 2MB');
+            resetImagePreview();
+            return;
+          }
+          
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            // Update preview
+            previewImage.src = e.target.result;
+            imagePreview.classList.add('show');
+            
+            // Get image dimensions for preview info
+            const img = new Image();
+            img.onload = function() {
+              const aspectRatio = (img.width / img.height).toFixed(2);
+              previewInfo.innerHTML = `
+                <div>Dimensions: ${img.width} × ${img.height}px</div>
+                <div>Aspect Ratio: ${aspectRatio}</div>
+                <div>Size: ${(file.size / 1024).toFixed(2)} KB</div>
+                <div>Type: ${file.type}</div>
+              `;
+            };
+            img.src = e.target.result;
+            
+            // Update file input display
+            fileInputCustom.classList.add('has-file');
+            fileInputCustom.classList.remove('error');
+            fileInputCustom.innerHTML = `
+              <i class="mdi mdi-check-circle" style="color: #27ae60; font-size: 24px; margin-bottom: 8px;"></i>
+              <div>${file.name}</div>
+              <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+            `;
+          };
+          
+          reader.onerror = function() {
+            alert('Error reading the image file. Please try again.');
+            resetImagePreview();
+          };
+          
+          reader.readAsDataURL(file);
+        } else {
+          resetImagePreview();
+        }
+      });
+
+      // Drag and drop functionality
+      fileInputCustom.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#3498db';
+        this.style.background = '#e3f2fd';
+      });
+
+      fileInputCustom.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        if (!fileInputCustom.classList.contains('has-file')) {
+          this.style.borderColor = '#e9ecef';
+          this.style.background = '#f8f9fa';
+        }
+      });
+
+      fileInputCustom.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          imageInput.files = files;
+          imageInput.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+
+    function resetImagePreview() {
+      imageInput.value = '';
+      imagePreview.classList.remove('show');
+      fileInputCustom.classList.remove('has-file', 'error');
+      fileInputCustom.innerHTML = `
+        <i class="mdi mdi-cloud-upload" style="font-size: 24px; margin-bottom: 8px;"></i>
+        <div>Click to browse or drag & drop a technology icon</div>
+        <small>Supports: PNG, SVG (Max: 2MB)</small>
+      `;
+      fileInputCustom.style.borderColor = '';
+      fileInputCustom.style.background = '';
+    }
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+      
+      // Validate name
+      if (!techName.value.trim()) {
+        alert('Please enter a technology name.');
+        techName.focus();
+        isValid = false;
+      } else if (techName.value.length > 50) {
+        alert('Technology name must be 50 characters or less.');
+        isValid = false;
+      }
+      
+      // Validate image
+      if (!imageInput.files.length) {
+        alert('Please select a technology icon.');
+        fileInputCustom.classList.add('error');
+        isValid = false;
+      } else {
+        const file = imageInput.files[0];
+        if (!file.type.match('image.*')) {
+          alert('Please select a valid image file.');
+          isValid = false;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Icon size should be less than 2MB.');
+          isValid = false;
+        }
+      }
+      
+      if (!isValid) {
+        e.preventDefault();
+      }
+    });
+
+    // Initialize image preview
+    setupImagePreview();
+  });
+</script>
+{% endblock %}

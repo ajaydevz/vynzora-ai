@@ -1,0 +1,1491 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .websites-list-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .header-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .search-box {
+    position: relative;
+    width: 300px;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 45px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .search-box i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 18px;
+  }
+
+  .clear-search {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+    transition: color 0.3s ease;
+  }
+
+  .clear-search:hover {
+    color: #e74c3c;
+  }
+
+  .clear-search.show {
+    display: block;
+  }
+
+  .btn-add {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .websites-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .websites-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .websites-card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .websites-count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .websites-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1200px;
+  }
+
+  .websites-table thead {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .websites-table thead th {
+    padding: 18px 15px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e9ecef;
+    white-space: nowrap;
+  }
+
+  .websites-table tbody tr {
+    border-bottom: 1px solid #f1f3f5;
+    transition: all 0.3s ease;
+  }
+
+  .websites-table tbody tr:hover {
+    background: #f8f9fa;
+  }
+
+  .websites-table tbody td {
+    padding: 15px;
+    font-size: 13px;
+    color: #495057;
+    vertical-align: top;
+  }
+
+  .website-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 200px;
+  }
+
+  .website-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .website-details h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+  }
+
+  .website-details p {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .btn-update {
+    background: #3498db;
+    color: white;
+  }
+
+  .btn-update:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-delete {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .empty-state i {
+    font-size: 64px;
+    color: #cbd5e0;
+    margin-bottom: 20px;
+  }
+
+  .empty-state h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 25px;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .no-results i {
+    font-size: 48px;
+    color: #cbd5e0;
+    margin-bottom: 15px;
+  }
+
+  .no-results p {
+    font-size: 14px;
+    color: #6c757d;
+  }
+
+  .highlight {
+    background: #fff3cd;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  .description-cell {
+    max-width: 200px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
+  }
+
+  .services-list {
+    margin: 0;
+    padding-left: 16px;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+
+  .services-list li {
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .services-list strong {
+    font-size: 11px;
+  }
+
+  .image-preview {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+  }
+
+  .meta-title-cell {
+    max-width: 150px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
+  }
+
+  .category-cell {
+    white-space: nowrap;
+  }
+
+  .slug-cell {
+    font-family: monospace;
+    font-size: 11px;
+    color: #6c757d;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #e67e22;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  .current-image-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px dashed #e9ecef;
+  }
+
+  .current-image-wrapper h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+
+  .current-image-preview {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #e9ecef;
+  }
+
+  .current-image-info {
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  /* File input styling */
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-input-custom {
+    padding: 12px 16px;
+    border: 2px dashed #e9ecef;
+    border-radius: 10px;
+    background: #f8f9fa;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6c757d;
+  }
+
+  .file-input-custom:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .file-input-custom.has-file {
+    border-color: #27ae60;
+    background: #e8f5e8;
+    color: #27ae60;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .btn-modal {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-cancel {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-confirm-delete {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+  }
+
+  .btn-confirm-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+  }
+
+  .delete-warning {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .delete-warning i {
+    font-size: 64px;
+    color: #e74c3c;
+    margin-bottom: 20px;
+  }
+
+  .delete-warning h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .delete-warning p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+
+  .delete-website-name {
+    font-weight: 700;
+    color: #e74c3c;
+  }
+
+  .service-group {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+  }
+
+  .service-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .service-group-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .btn-remove-service {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-remove-service:hover {
+    background: #c0392b;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .header-right {
+      flex-direction: column;
+    }
+
+    .search-box {
+      width: 100%;
+    }
+
+    .websites-table thead th,
+    .websites-table tbody td {
+      padding: 12px 8px;
+      font-size: 11px;
+    }
+
+    .website-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn-action {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .modal-content {
+      width: 95%;
+      margin: 10px;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  /* Scrollbar Styling */
+  .table-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+
+  .services-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .services-list::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+  }
+
+  .services-list::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+  }
+</style>
+
+<div class="websites-list-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Websites</h2>
+      <p>Manage and view all websites</p>
+    </div>
+    <div class="header-right">
+      <div class="search-box">
+        <i class="mdi mdi-magnify"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search by name, category, or slug..." 
+          autocomplete="off"
+        >
+        <button type="button" class="clear-search" id="clearSearch">
+          <i class="mdi mdi-close"></i>
+        </button>
+      </div>
+      <a href="{% url 'add_website' %}" class="btn-add">
+        <i class="mdi mdi-plus"></i>
+        Add Website
+      </a>
+    </div>
+  </div>
+
+  <!-- Websites Card -->
+  <div class="websites-card">
+    <div class="websites-card-header">
+      <h3>
+        <i class="mdi mdi-web"></i>
+        All Websites
+      </h3>
+      <span class="websites-count" id="websitesCount">{{ websites|length }} Websites</span>
+    </div>
+
+    <div class="table-wrapper">
+      {% if websites %}
+      <table class="websites-table">
+        <thead>
+          <tr>
+            <th>Website</th>
+            <th>Category</th>
+            <th>Slug</th>
+            <th>Description</th>
+            <th>Meta Title</th>
+            <th>Image</th>
+            <th>Services</th>
+            <th>Created Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="websitesTableBody">
+          {% for website in websites %}
+          <tr data-id="{{ website.id }}" data-name="{{ website.name }}" data-category="{{ website.category.name }}" data-slug="{{ website.slug }}">
+            <td>
+              <div class="website-info">
+                <div class="website-avatar">
+                  {{ website.name|first|upper }}
+                </div>
+                <div class="website-details">
+                  <h4 class="website-name">{{ website.name }}</h4>
+                  <p class="website-slug">{{ website.slug }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="website-category category-cell">{{ website.category.name }}</td>
+            <td class="website-slug slug-cell">{{ website.slug }}</td>
+            <td class="description-cell">{{ website.description|default:"-"|truncatewords:15 }}</td>
+            <td class="website-meta-title meta-title-cell">{{ website.meta_title|default:"-"|truncatewords:8 }}</td>
+            <td>
+              {% if website.image %}
+                <img src="{{ website.image.url }}" alt="{{ website.name }}" class="image-preview">
+              {% else %}
+                <span style="color: #6c757d; font-size: 11px;">No image</span>
+              {% endif %}
+            </td>
+            <td class="description-cell">
+              {% if website.services.all %}
+                <ul class="services-list">
+                  {% for service in website.services.all|slice:":3" %}
+                    <li><strong>{{ service.heading }}</strong>: {{ service.description|truncatewords:4 }}</li>
+                  {% endfor %}
+                  {% if website.services.all|length > 3 %}
+                    <li style="font-style: italic; color: #6c757d;">+{{ website.services.all|length|add:"-3" }} more</li>
+                  {% endif %}
+                </ul>
+              {% else %}
+                <span style="color: #6c757d; font-size: 11px;">No services</span>
+              {% endif %}
+            </td>
+            <td class="website-date">{{ website.created_date|date:"M d, Y" }}</td>
+            <td>
+              <div class="action-buttons">
+                <button 
+                  type="button" 
+                  class="btn-action btn-update" 
+                  onclick="openUpdateModal({{ website.id }}, '{{ website.name|escapejs }}', '{{ website.category.id|escapejs }}', '{{ website.slug|escapejs }}', '{{ website.meta_title|escapejs }}', '{{ website.meta_description|escapejs }}', '{{ website.description|escapejs }}', '{{ website.add_description|escapejs }}', '{% if website.image %}{{ website.image.url }}{% endif %}')"
+                >
+                  <i class="mdi mdi-pencil"></i>
+                  Update
+                </button>
+                <button 
+                  type="button" 
+                  class="btn-action btn-delete" 
+                  onclick="openDeleteModal({{ website.id }}, '{{ website.name|escapejs }}')"
+                >
+                  <i class="mdi mdi-delete"></i>
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="no-results" id="noResults" style="display: none;">
+        <i class="mdi mdi-magnify"></i>
+        <p>No websites found matching your search.</p>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="mdi mdi-web"></i>
+        <h3>No Websites Yet</h3>
+        <p>Start by adding your first website</p>
+        <a href="{% url 'add_website' %}" class="btn-add">
+          <i class="mdi mdi-plus"></i>
+          Add First Website
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Update Modal -->
+<div id="updateModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>
+        <i class="mdi mdi-pencil"></i>
+        Update Website
+      </h3>
+      <button type="button" class="modal-close" onclick="closeUpdateModal()">
+        <i class="mdi mdi-close"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form method="POST" enctype="multipart/form-data" id="updateForm" action="">
+        {% csrf_token %}
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              Website Name<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="name" 
+              id="updateName" 
+              placeholder="Enter website name"
+              required
+              maxlength="100"
+            >
+            <div class="character-count" id="updateNameCount">0/100 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Category<span class="required">*</span>
+            </label>
+            <select class="form-control" id="updateCategory" name="category" required>
+              {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              Slug<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="slug" 
+              id="updateSlug" 
+              placeholder="Enter slug"
+              required
+              maxlength="100"
+            >
+            <div class="character-count" id="updateSlugCount">0/100 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Meta Title
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="meta_title" 
+              id="updateMetaTitle" 
+              placeholder="Enter meta title"
+              maxlength="200"
+            >
+            <div class="character-count" id="updateMetaTitleCount">0/200 characters</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Meta Description
+          </label>
+          <textarea 
+            class="form-control form-textarea" 
+            name="meta_description" 
+            id="updateMetaDescription" 
+            placeholder="Enter meta description"
+            maxlength="500"
+          ></textarea>
+          <div class="character-count" id="updateMetaDescriptionCount">0/500 characters</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Description
+          </label>
+          <textarea 
+            class="form-control form-textarea" 
+            name="description" 
+            id="updateDescription" 
+            placeholder="Enter website description"
+            maxlength="1000"
+          ></textarea>
+          <div class="character-count" id="updateDescriptionCount">0/1000 characters</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Additional Description
+          </label>
+          <textarea 
+            class="form-control form-textarea" 
+            name="add_description" 
+            id="updateAddDescription" 
+            placeholder="Enter additional description"
+            rows="6"
+          ></textarea>
+        </div>
+
+        <div class="current-image-wrapper" id="currentImageWrapper">
+          <h4>Current Image</h4>
+          <img id="currentImagePreview" class="current-image-preview" src="" alt="Current website image">
+          <div class="current-image-info" id="currentImageInfo">
+            Current website image
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Upload New Image (Optional)
+          </label>
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              class="form-control" 
+              name="image" 
+              id="imageFileInput"
+              accept="image/*"
+            >
+            <div class="file-input-custom" id="fileInputCustom">
+              <i class="mdi mdi-cloud-upload"></i>
+              Click to browse or drag & drop a new image
+              <br>
+              <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+            </div>
+          </div>
+          <small style="color: #6c757d; font-size: 12px; margin-top: 6px; display: block;">
+            <i class="mdi mdi-information"></i> Leave empty to keep current image
+          </small>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" onclick="closeUpdateModal()">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn-modal btn-submit">
+            <i class="mdi mdi-check"></i>
+            Update Website
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+      <h3>
+        <i class="mdi mdi-alert"></i>
+        Delete Website
+      </h3>
+      <button type="button" class="modal-close" onclick="closeDeleteModal()">
+        <i class="mdi mdi-close"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="delete-warning">
+        <i class="mdi mdi-alert-circle-outline"></i>
+        <h4>Are you sure?</h4>
+        <p>You are about to delete the website</p>
+        <p class="delete-website-name" id="deleteWebsiteName"></p>
+        <p style="margin-top: 15px;">This action cannot be undone.</p>
+      </div>
+
+      <form method="POST" id="deleteForm" action="">
+        {% csrf_token %}
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" onclick="closeDeleteModal()">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn-modal btn-confirm-delete">
+            <i class="mdi mdi-delete"></i>
+            Yes, Delete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Search functionality
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  const websitesTableBody = document.getElementById('websitesTableBody');
+  const noResults = document.getElementById('noResults');
+  const websitesCount = document.getElementById('websitesCount');
+
+  // Modal elements
+  const updateModal = document.getElementById('updateModal');
+  const deleteModal = document.getElementById('deleteModal');
+  const imageFileInput = document.getElementById('imageFileInput');
+  const fileInputCustom = document.getElementById('fileInputCustom');
+  const currentImageWrapper = document.getElementById('currentImageWrapper');
+  const currentImagePreview = document.getElementById('currentImagePreview');
+  const currentImageInfo = document.getElementById('currentImageInfo');
+
+  // State variables
+  let currentWebsiteId = null;
+
+  // Highlight text function
+  function highlightText(text, searchTerm) {
+    if (!searchTerm) return text;
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, '<span class="highlight">$1</span>');
+  }
+
+  // Remove highlighting
+  function removeHighlighting() {
+    const highlightedElements = document.querySelectorAll('.highlight');
+    highlightedElements.forEach(el => {
+      const parent = el.parentNode;
+      parent.replaceChild(document.createTextNode(el.textContent), el);
+      parent.normalize();
+    });
+  }
+
+  // Search functionality
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    
+    if (searchTerm) {
+      clearSearch.classList.add('show');
+    } else {
+      clearSearch.classList.remove('show');
+      removeHighlighting();
+    }
+
+    const rows = websitesTableBody.getElementsByTagName('tr');
+    let visibleCount = 0;
+
+    Array.from(rows).forEach(row => {
+      const name = row.getAttribute('data-name').toLowerCase();
+      const category = row.getAttribute('data-category').toLowerCase();
+      const slug = row.getAttribute('data-slug').toLowerCase();
+      
+      if (name.includes(searchTerm) || category.includes(searchTerm) || slug.includes(searchTerm)) {
+        row.style.display = '';
+        visibleCount++;
+        
+        // Highlight matching text
+        const nameElement = row.querySelector('.website-name');
+        const categoryElement = row.querySelector('.website-category');
+        const slugElement = row.querySelector('.website-slug');
+        
+        if (nameElement) {
+          nameElement.innerHTML = highlightText(row.getAttribute('data-name'), searchTerm);
+        }
+        if (categoryElement) {
+          categoryElement.innerHTML = highlightText(row.getAttribute('data-category'), searchTerm);
+        }
+        if (slugElement) {
+          slugElement.innerHTML = highlightText(row.getAttribute('data-slug'), searchTerm);
+        }
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Show/hide no results message
+    if (visibleCount === 0 && searchTerm) {
+      noResults.style.display = 'block';
+      websitesTableBody.parentElement.style.display = 'none';
+    } else {
+      noResults.style.display = 'none';
+      websitesTableBody.parentElement.style.display = 'table';
+    }
+
+    // Update count
+    websitesCount.textContent = `${visibleCount} Website${visibleCount !== 1 ? 's' : ''}`;
+  });
+
+  clearSearch.addEventListener('click', function() {
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input'));
+    searchInput.focus();
+  });
+
+  // Modal functionality
+  function openUpdateModal(id, name, categoryId, slug, metaTitle, metaDescription, description, addDescription, imageUrl) {
+    currentWebsiteId = id;
+    
+    // Set form action URL
+    document.getElementById('updateForm').action = `{% url 'update_website' 0 %}`.replace('0', id);
+    
+    // Populate form fields
+    document.getElementById('updateName').value = name;
+    document.getElementById('updateCategory').value = categoryId;
+    document.getElementById('updateSlug').value = slug;
+    document.getElementById('updateMetaTitle').value = metaTitle || '';
+    document.getElementById('updateMetaDescription').value = metaDescription || '';
+    document.getElementById('updateDescription').value = description || '';
+    document.getElementById('updateAddDescription').value = addDescription || '';
+    
+    // Update character counts
+    updateCharacterCount(document.getElementById('updateName'), document.getElementById('updateNameCount'), 100);
+    updateCharacterCount(document.getElementById('updateSlug'), document.getElementById('updateSlugCount'), 100);
+    updateCharacterCount(document.getElementById('updateMetaTitle'), document.getElementById('updateMetaTitleCount'), 200);
+    updateCharacterCount(document.getElementById('updateMetaDescription'), document.getElementById('updateMetaDescriptionCount'), 500);
+    updateCharacterCount(document.getElementById('updateDescription'), document.getElementById('updateDescriptionCount'), 1000);
+    
+    // Handle image preview
+    if (imageUrl) {
+      currentImagePreview.src = imageUrl;
+      currentImageWrapper.style.display = 'block';
+    } else {
+      currentImageWrapper.style.display = 'none';
+    }
+    
+    // Reset file input
+    resetFileInput();
+    
+    // Show modal
+    updateModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeUpdateModal() {
+    updateModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+    resetFileInput();
+  }
+
+  function openDeleteModal(id, name) {
+    // Set form action URL
+    document.getElementById('deleteForm').action = `{% url 'delete_website' 0 %}`.replace('0', id);
+    
+    // Set website name in confirmation message
+    document.getElementById('deleteWebsiteName').textContent = name;
+    
+    // Show modal
+    deleteModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDeleteModal() {
+    deleteModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+  }
+
+  // Character count functionality
+  function updateCharacterCount(element, countElement, maxLength) {
+    const currentLength = element.value.length;
+    countElement.textContent = `${currentLength}/${maxLength} characters`;
+    
+    if (currentLength > maxLength * 0.9) {
+      countElement.classList.add('warning');
+      countElement.classList.remove('error');
+    } else if (currentLength > maxLength) {
+      countElement.classList.add('error');
+      countElement.classList.remove('warning');
+    } else {
+      countElement.classList.remove('warning', 'error');
+    }
+  }
+
+  // File input functionality
+  function setupFileInput() {
+    imageFileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      
+      if (file) {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          alert('Please select an image file');
+          resetFileInput();
+          return;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('File size should be less than 5MB');
+          resetFileInput();
+          return;
+        }
+        
+        // Update file input display
+        fileInputCustom.classList.add('has-file');
+        fileInputCustom.innerHTML = `
+          <i class="mdi mdi-check-circle" style="color: #27ae60;"></i>
+          ${file.name}
+          <br>
+          <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+        `;
+      } else {
+        resetFileInput();
+      }
+    });
+
+    // Drag and drop functionality
+    fileInputCustom.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.style.borderColor = '#3498db';
+      this.style.background = '#e3f2fd';
+    });
+
+    fileInputCustom.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      if (!fileInputCustom.classList.contains('has-file')) {
+        this.style.borderColor = '#e9ecef';
+        this.style.background = '#f8f9fa';
+      }
+    });
+
+    fileInputCustom.addEventListener('drop', function(e) {
+      e.preventDefault();
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        imageFileInput.files = files;
+        imageFileInput.dispatchEvent(new Event('change'));
+      }
+    });
+  }
+
+  function resetFileInput() {
+    imageFileInput.value = '';
+    fileInputCustom.classList.remove('has-file');
+    fileInputCustom.innerHTML = `
+      <i class="mdi mdi-cloud-upload"></i>
+      Click to browse or drag & drop a new image
+      <br>
+      <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+    `;
+  }
+
+  // Close modals when clicking outside
+  window.addEventListener('click', function(event) {
+    if (event.target === updateModal) {
+      closeUpdateModal();
+    }
+    if (event.target === deleteModal) {
+      closeDeleteModal();
+    }
+  });
+
+  // Close modals with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeUpdateModal();
+      closeDeleteModal();
+    }
+  });
+
+  // Form validation
+  document.getElementById('updateForm').addEventListener('submit', function(e) {
+    const name = document.getElementById('updateName').value.trim();
+    const slug = document.getElementById('updateSlug').value.trim();
+    const category = document.getElementById('updateCategory').value;
+    
+    if (!name || !slug || !category) {
+      e.preventDefault();
+      alert('Please fill in all required fields.');
+      return false;
+    }
+    
+    if (name.length > 100) {
+      e.preventDefault();
+      alert('Name must be 100 characters or less.');
+      return false;
+    }
+    
+    if (slug.length > 100) {
+      e.preventDefault();
+      alert('Slug must be 100 characters or less.');
+      return false;
+    }
+    
+    // Validate file if selected
+    if (imageFileInput.files.length > 0) {
+      const file = imageFileInput.files[0];
+      if (!file.type.startsWith('image/')) {
+        e.preventDefault();
+        alert('Please select an image file.');
+        return false;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        e.preventDefault();
+        alert('File size should be less than 5MB.');
+        return false;
+      }
+    }
+  });
+
+  // Initialize page
+  document.addEventListener('DOMContentLoaded', function() {
+    // Focus search input on page load
+    if (searchInput) {
+      searchInput.focus();
+    }
+    
+    // Add loading animation to table rows
+    const rows = websitesTableBody.getElementsByTagName('tr');
+    Array.from(rows).forEach((row, index) => {
+      row.style.animationDelay = `${index * 0.1}s`;
+    });
+    
+    // Setup file input functionality
+    setupFileInput();
+    
+    // Setup character count listeners for update modal
+    const updateName = document.getElementById('updateName');
+    const updateSlug = document.getElementById('updateSlug');
+    const updateMetaTitle = document.getElementById('updateMetaTitle');
+    const updateMetaDescription = document.getElementById('updateMetaDescription');
+    const updateDescription = document.getElementById('updateDescription');
+    
+    if (updateName) {
+      updateName.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('updateNameCount'), 100);
+      });
+    }
+    
+    if (updateSlug) {
+      updateSlug.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('updateSlugCount'), 100);
+      });
+    }
+    
+    if (updateMetaTitle) {
+      updateMetaTitle.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('updateMetaTitleCount'), 200);
+      });
+    }
+    
+    if (updateMetaDescription) {
+      updateMetaDescription.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('updateMetaDescriptionCount'), 500);
+      });
+    }
+    
+    if (updateDescription) {
+      updateDescription.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('updateDescriptionCount'), 1000);
+      });
+    }
+  });
+</script>
+{% endblock %}

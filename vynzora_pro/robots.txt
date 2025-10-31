@@ -1,0 +1,8 @@
+# robots.txt for vynzora.com
+
+User-agent: *
+Disallow: /admin/
+Disallow: /secret/
+Disallow: /private/
+Allow: /static/
+Sitemap: https://vynzora.com/sitemap.xml

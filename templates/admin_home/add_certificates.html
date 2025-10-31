@@ -1,0 +1,805 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-certificate-container {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .btn-back {
+    padding: 12px 24px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-back:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+
+  .certificate-form-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .certificate-form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+  }
+
+  .certificate-form-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .certificate-form-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .form-control.error {
+    border-color: #e74c3c;
+  }
+
+  .error-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+  }
+
+  .error-message.show {
+    display: block;
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #e67e22;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  /* File input styling */
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-input-custom {
+    padding: 20px;
+    border: 2px dashed #e9ecef;
+    border-radius: 10px;
+    background: #f8f9fa;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6c757d;
+  }
+
+  .file-input-custom:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .file-input-custom.has-file {
+    border-color: #27ae60;
+    background: #e8f5e8;
+    color: #27ae60;
+  }
+
+  .file-input-custom.error {
+    border-color: #e74c3c;
+    background: #fdeded;
+  }
+
+  .file-preview {
+    margin-top: 20px;
+    text-align: center;
+    display: none;
+  }
+
+  .file-preview.show {
+    display: block;
+  }
+
+  .preview-icon {
+    font-size: 64px;
+    color: #e74c3c;
+    margin-bottom: 10px;
+  }
+
+  .preview-info {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn-form {
+    flex: 1;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-cancel {
+    background: #e9ecef;
+    color: #495057;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-submit:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .recommended-size {
+    background: #e3f2fd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    border-left: 4px solid #3498db;
+  }
+
+  .recommended-size h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .recommended-size p {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .add-certificate-container {
+      margin: 0 15px;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .certificate-form-body {
+      padding: 20px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn-form {
+      width: 100%;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .header-left h2 {
+      font-size: 20px;
+    }
+
+    .certificate-form-header {
+      padding: 20px;
+    }
+
+    .certificate-form-header h3 {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<div class="add-certificate-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Add Certificate</h2>
+      <p>Issue a new certificate to recognize achievements</p>
+    </div>
+    <a href="{% url 'view_certificates' %}" class="btn-back">
+      <i class="mdi mdi-arrow-left"></i>
+      Back to Certificates
+    </a>
+  </div>
+
+  <!-- Certificate Form Card -->
+  <div class="certificate-form-card">
+    <div class="certificate-form-header">
+      <h3>
+        <i class="mdi mdi-certificate"></i>
+        Certificate Information
+      </h3>
+    </div>
+
+    <div class="certificate-form-body">
+      <form method="POST" enctype="multipart/form-data" id="certificateForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label class="form-label">
+            Certificate ID<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="id1" 
+            id="certificateId" 
+            placeholder="Enter certificate ID"
+            required
+            maxlength="20"
+          >
+          <div class="error-message" id="idError">Please enter a valid certificate ID</div>
+          <div class="character-count" id="idCount">0/20 characters</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              Full Name<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="name" 
+              id="name" 
+              placeholder="Enter full name"
+              required
+              maxlength="100"
+            >
+            <div class="error-message" id="nameError">Please enter a valid name</div>
+            <div class="character-count" id="nameCount">0/100 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Email Address<span class="required">*</span>
+            </label>
+            <input 
+              type="email" 
+              class="form-control" 
+              name="email" 
+              id="email" 
+              placeholder="Enter email address"
+              required
+              maxlength="100"
+            >
+            <div class="error-message" id="emailError">Please enter a valid email address</div>
+            <div class="character-count" id="emailCount">0/100 characters</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              Join Date<span class="required">*</span>
+            </label>
+            <input 
+              type="date" 
+              class="form-control" 
+              name="join_date" 
+              id="joinDate" 
+              placeholder="YYYY-MM-DD"
+              required
+            >
+            <div class="error-message" id="dateError">Please select a valid date</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Designation<span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="designation" 
+              id="designation" 
+              placeholder="Enter designation"
+              required
+              maxlength="100"
+            >
+            <div class="error-message" id="designationError">Please enter a valid designation</div>
+            <div class="character-count" id="designationCount">0/100 characters</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Certificate File<span class="required">*</span>
+          </label>
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              class="form-control" 
+              name="pdf_file" 
+              id="pdfFile"
+              accept="application/pdf"
+              required
+            >
+            <div class="file-input-custom" id="fileInputCustom">
+              <i class="mdi mdi-file-pdf" style="font-size: 24px; margin-bottom: 8px;"></i>
+              <div>Click to browse or drag & drop a PDF certificate</div>
+              <small>Supports: PDF files only (Max: 10MB)</small>
+            </div>
+          </div>
+          <div class="error-message" id="fileError">Please select a valid PDF file</div>
+          
+          <div class="file-preview" id="filePreview">
+            <i class="mdi mdi-file-pdf preview-icon"></i>
+            <h4 style="font-size: 14px; color: #2c3e50; margin-bottom: 10px;">PDF File Selected</h4>
+            <div class="preview-info" id="previewInfo"></div>
+          </div>
+
+          <div class="recommended-size">
+            <h5>
+              <i class="mdi mdi-information"></i>
+              File Requirements
+            </h5>
+            <p>Upload certificate in PDF format only. Maximum file size is 10MB. Ensure the certificate is clear, readable, and properly formatted for professional presentation.</p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a href="{% url 'view_certificates' %}" class="btn-form btn-cancel">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </a>
+          <button type="submit" class="btn-form btn-submit" id="submitBtn">
+            <i class="mdi mdi-check"></i>
+            Issue Certificate
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Form elements
+    const form = document.getElementById('certificateForm');
+    const certificateId = document.getElementById('certificateId');
+    const name = document.getElementById('name');
+    const email = document.getElementById('email');
+    const joinDate = document.getElementById('joinDate');
+    const designation = document.getElementById('designation');
+    const pdfFile = document.getElementById('pdfFile');
+    const fileInputCustom = document.getElementById('fileInputCustom');
+    const filePreview = document.getElementById('filePreview');
+    const previewInfo = document.getElementById('previewInfo');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Character count elements
+    const idCount = document.getElementById('idCount');
+    const nameCount = document.getElementById('nameCount');
+    const emailCount = document.getElementById('emailCount');
+    const designationCount = document.getElementById('designationCount');
+
+    // Error elements
+    const idError = document.getElementById('idError');
+    const nameError = document.getElementById('nameError');
+    const emailError = document.getElementById('emailError');
+    const dateError = document.getElementById('dateError');
+    const designationError = document.getElementById('designationError');
+    const fileError = document.getElementById('fileError');
+
+    // Initialize character counts
+    updateCharacterCount(certificateId, idCount, 20);
+    updateCharacterCount(name, nameCount, 100);
+    updateCharacterCount(email, emailCount, 100);
+    updateCharacterCount(designation, designationCount, 100);
+
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    joinDate.min = today;
+
+    // Character count functionality
+    function updateCharacterCount(element, countElement, maxLength) {
+      const currentLength = element.value.length;
+      countElement.textContent = `${currentLength}/${maxLength} characters`;
+      
+      if (currentLength > maxLength * 0.9) {
+        countElement.classList.add('warning');
+        countElement.classList.remove('error');
+      } else if (currentLength > maxLength) {
+        countElement.classList.add('error');
+        countElement.classList.remove('warning');
+      } else {
+        countElement.classList.remove('warning', 'error');
+      }
+    }
+
+    // Event listeners for character counts
+    certificateId.addEventListener('input', function() {
+      updateCharacterCount(this, idCount, 20);
+      validateField(this, idError, 'id');
+    });
+
+    name.addEventListener('input', function() {
+      updateCharacterCount(this, nameCount, 100);
+      validateField(this, nameError, 'name');
+    });
+
+    email.addEventListener('input', function() {
+      updateCharacterCount(this, emailCount, 100);
+      validateField(this, emailError, 'email');
+    });
+
+    designation.addEventListener('input', function() {
+      updateCharacterCount(this, designationCount, 100);
+      validateField(this, designationError, 'designation');
+    });
+
+    // Field validation
+    function validateField(field, errorElement, fieldType) {
+      const value = field.value.trim();
+      
+      if (!value) {
+        showError(field, errorElement, 'This field is required');
+        return false;
+      }
+      
+      if (fieldType === 'id' && value.length > 20) {
+        showError(field, errorElement, 'Certificate ID must be 20 characters or less');
+        return false;
+      }
+      
+      if (fieldType === 'name' && value.length > 100) {
+        showError(field, errorElement, 'Name must be 100 characters or less');
+        return false;
+      }
+      
+      if (fieldType === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          showError(field, errorElement, 'Please enter a valid email address');
+          return false;
+        }
+        if (value.length > 100) {
+          showError(field, errorElement, 'Email must be 100 characters or less');
+          return false;
+        }
+      }
+      
+      if (fieldType === 'designation' && value.length > 100) {
+        showError(field, errorElement, 'Designation must be 100 characters or less');
+        return false;
+      }
+      
+      hideError(field, errorElement);
+      return true;
+    }
+
+    function showError(field, errorElement, message) {
+      field.classList.add('error');
+      errorElement.textContent = message;
+      errorElement.classList.add('show');
+    }
+
+    function hideError(field, errorElement) {
+      field.classList.remove('error');
+      errorElement.classList.remove('show');
+    }
+
+    // Date validation
+    joinDate.addEventListener('change', function() {
+      const selectedDate = new Date(this.value);
+      const today = new Date();
+      
+      if (selectedDate > today) {
+        showError(this, dateError, 'Join date cannot be in the future');
+      } else {
+        hideError(this, dateError);
+      }
+    });
+
+    // File preview functionality
+    function setupFilePreview() {
+      pdfFile.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+          // Validate file type
+          if (file.type !== 'application/pdf') {
+            showError(pdfFile, fileError, 'Please select a PDF file');
+            fileInputCustom.classList.add('error');
+            resetFilePreview();
+            return;
+          }
+          
+          // Validate file size (max 10MB)
+          if (file.size > 10 * 1024 * 1024) {
+            showError(pdfFile, fileError, 'File size should be less than 10MB');
+            fileInputCustom.classList.add('error');
+            resetFilePreview();
+            return;
+          }
+          
+          // Update preview
+          filePreview.classList.add('show');
+          previewInfo.innerHTML = `
+            <div>File Name: ${file.name}</div>
+            <div>File Size: ${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+            <div>File Type: ${file.type}</div>
+          `;
+          
+          // Update file input display
+          fileInputCustom.classList.add('has-file');
+          fileInputCustom.classList.remove('error');
+          fileInputCustom.innerHTML = `
+            <i class="mdi mdi-check-circle" style="color: #27ae60; font-size: 24px; margin-bottom: 8px;"></i>
+            <div>${file.name}</div>
+            <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+          `;
+          
+          hideError(pdfFile, fileError);
+        } else {
+          resetFilePreview();
+        }
+      });
+
+      // Drag and drop functionality
+      fileInputCustom.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#3498db';
+        this.style.background = '#e3f2fd';
+      });
+
+      fileInputCustom.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        if (!fileInputCustom.classList.contains('has-file')) {
+          this.style.borderColor = '#e9ecef';
+          this.style.background = '#f8f9fa';
+        }
+      });
+
+      fileInputCustom.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          pdfFile.files = files;
+          pdfFile.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+
+    function resetFilePreview() {
+      pdfFile.value = '';
+      filePreview.classList.remove('show');
+      fileInputCustom.classList.remove('has-file', 'error');
+      fileInputCustom.innerHTML = `
+        <i class="mdi mdi-file-pdf" style="font-size: 24px; margin-bottom: 8px;"></i>
+        <div>Click to browse or drag & drop a PDF certificate</div>
+        <small>Supports: PDF files only (Max: 10MB)</small>
+      `;
+      fileInputCustom.style.borderColor = '';
+      fileInputCustom.style.background = '';
+    }
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+      
+      // Validate all fields
+      if (!validateField(certificateId, idError, 'id')) isValid = false;
+      if (!validateField(name, nameError, 'name')) isValid = false;
+      if (!validateField(email, emailError, 'email')) isValid = false;
+      if (!validateField(designation, designationError, 'designation')) isValid = false;
+      
+      // Validate date
+      if (!joinDate.value) {
+        showError(joinDate, dateError, 'Please select a join date');
+        isValid = false;
+      } else {
+        const selectedDate = new Date(joinDate.value);
+        const today = new Date();
+        if (selectedDate > today) {
+          showError(joinDate, dateError, 'Join date cannot be in the future');
+          isValid = false;
+        }
+      }
+      
+      // Validate file
+      if (!pdfFile.files.length) {
+        showError(pdfFile, fileError, 'Please select a PDF certificate file');
+        fileInputCustom.classList.add('error');
+        isValid = false;
+      } else {
+        const file = pdfFile.files[0];
+        if (file.type !== 'application/pdf') {
+          showError(pdfFile, fileError, 'Please select a PDF file');
+          isValid = false;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          showError(pdfFile, fileError, 'File size should be less than 10MB');
+          isValid = false;
+        }
+      }
+      
+      if (!isValid) {
+        e.preventDefault();
+        // Scroll to first error
+        const firstError = form.querySelector('.error');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    });
+
+    // Real-time validation on blur
+    certificateId.addEventListener('blur', function() {
+      validateField(this, idError, 'id');
+    });
+
+    name.addEventListener('blur', function() {
+      validateField(this, nameError, 'name');
+    });
+
+    email.addEventListener('blur', function() {
+      validateField(this, emailError, 'email');
+    });
+
+    designation.addEventListener('blur', function() {
+      validateField(this, designationError, 'designation');
+    });
+
+    // Initialize file preview
+    setupFilePreview();
+  });
+</script>
+{% endblock %}

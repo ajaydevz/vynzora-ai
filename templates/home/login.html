@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vynzora - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 3D Animated Canvas Background */
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Animated Mesh Background */
+        .mesh-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            opacity: 0.4;
+        }
+
+        .mesh-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            transform-origin: center;
+        }
+
+        /* Login Container */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Glass Card with Glow */
+        .login-card {
+            background: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 50px 45px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            animation: cardAppear 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(255, 255, 255, 0.15) 90deg,
+                transparent 180deg
+            );
+            animation: cardRotate 4s linear infinite;
+            z-index: -1;
+        }
+
+        .login-card::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            background: rgba(15, 15, 15, 0.95);
+            border-radius: 19px;
+            z-index: -1;
+        }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes cardRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Logo */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo-text {
+            font-size: 38px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 6px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo-text::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #ffffff;
+            animation: underlinePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes underlinePulse {
+            0%, 100% { width: 60px; opacity: 1; }
+            50% { width: 80px; opacity: 0.5; }
+        }
+
+        .login-title {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            margin-top: 20px;
+        }
+
+        .login-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 15px;
+        }
+
+        /* Input Styles */
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            position: relative;
+        }
+
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            padding: 5px;
+            z-index: 5;
+        }
+
+        .password-toggle:hover {
+            color: #ffffff;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+            display: block;
+        }
+
+        /* Login Options */
+        .login-options {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 30px;
+        }
+
+        .forgot-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .forgot-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #ffffff;
+        }
+
+        .forgot-link:hover::after {
+            width: 100%;
+        }
+
+        /* Button */
+        .login-btn {
+            width: 100%;
+            padding: 17px;
+            background: #ffffff;
+            border: none;
+            border-radius: 10px;
+            color: #000000;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
+        }
+
+        .login-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ffffff;
+        }
+
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: loaderFadeOut 0.5s ease-out 1.2s forwards;
+        }
+
+        .loader-text {
+            font-size: 48px;
+            font-weight: 500;
+            color: #ffffff;
+            letter-spacing: 10px;
+        }
+
+        .loader-text span {
+            display: inline-block;
+            animation: letterFloat 1s ease-in-out infinite;
+        }
+
+        .loader-text span:nth-child(1) { animation-delay: 0s; }
+        .loader-text span:nth-child(2) { animation-delay: 0.1s; }
+        .loader-text span:nth-child(3) { animation-delay: 0.2s; }
+        .loader-text span:nth-child(4) { animation-delay: 0.3s; }
+        .loader-text span:nth-child(5) { animation-delay: 0.4s; }
+        .loader-text span:nth-child(6) { animation-delay: 0.5s; }
+        .loader-text span:nth-child(7) { animation-delay: 0.6s; }
+
+        @keyframes letterFloat {
+            0%, 100% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(-15px); opacity: 0.7; }
+        }
+
+        @keyframes loaderFadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 40px 30px;
+            }
+            
+            .logo-text {
+                font-size: 32px;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader">
+        <div class="loader-text">
+            <span>V</span>
+            <span>Y</span>
+            <span>N</span>
+            <span>Z</span>
+            <span>O</span>
+            <span>R</span>
+            <span>A</span>
+        </div>
+    </div>
+
+    <!-- 3D Canvas Background -->
+    <canvas id="canvas3d"></canvas>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-container">
+                <div class="logo-text">VYNZORA</div>
+            </div>
+
+            {% comment %} <h3 class="login-title">Login to Vynzora</h3> {% endcomment %}
+            <p class="login-subtitle">Welcome back, Admin</p>
+
+            <form method="POST">
+                <!-- Add your {% csrf_token %} here -->
+                  {% csrf_token %}
+                
+                <div class="input-group">
+                    <label class="input-label" for="username">Username</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            class="input-field" 
+                            placeholder="Enter your username" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="input-field" 
+                            placeholder="Enter your password" 
+                            required
+                        >
+                        <div class="password-toggle" id="password-toggle">
+                            <svg id="eye-open" width="20" height="20" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 6.77778C1 6.77778 3.90909 1 9 1C14.0909 1 17 6.77778 17 6.77778C17 6.77778 14.0909 12.5556 9 12.5556C3.90909 12.5556 1 6.77778 1 6.77778Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M9 9C10.1046 9 11 8.10457 11 7C11 5.89543 10.1046 5 9 5C7.89543 5 7 5.89543 7 7C7 8.10457 7.89543 9 9 9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <svg id="eye-closed" style="display: none;" width="20" height="20" viewBox="0 0 19 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 1L18 17M7 7C6.5 7.5 6 8.5 6 9.5C6 11.5 7.5 13 9.5 13C10.5 13 11.5 12.5 12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M3.5 4C2 5.5 1 7.5 1 9C1 13 4.5 16 9 16C11 16 12.5 15 14 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M15 10C16 9 17 8 17 7C17 3 13.5 0 9 0C8 0 7 0.5 6 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="login-options">
+                    <a href="#" class="forgot-link">Contact Vynzora?</a>
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+
+                <a href="#" class="back-link">← Back to Home</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 3D Canvas Animation
+        const canvas = document.getElementById('canvas3d');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.z = Math.random() * 2000;
+                this.size = 2;
+            }
+
+            update() {
+                this.z -= 5;
+                if (this.z <= 0) {
+                    this.z = 2000;
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                }
+            }
+
+            draw() {
+                const x = (this.x - canvas.width / 2) * (1000 / this.z) + canvas.width / 2;
+                const y = (this.y - canvas.height / 2) * (1000 / this.z) + canvas.height / 2;
+                const size = this.size * (1000 / this.z);
+
+                ctx.fillStyle = `rgba(255, 255, 255, ${1 - this.z / 2000})`;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw trail
+                const prevX = (this.x - canvas.width / 2) * (1000 / (this.z + 100)) + canvas.width / 2;
+                const prevY = (this.y - canvas.height / 2) * (1000 / (this.z + 100)) + canvas.height / 2;
+                
+                ctx.strokeStyle = `rgba(255, 255, 255, ${0.3 - this.z / 2000})`;
+                ctx.lineWidth = size / 2;
+                ctx.beginPath();
+                ctx.moveTo(prevX, prevY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+        }
+
+        const particles = Array.from({ length: 200 }, () => new Particle());
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Password Toggle
+        const passwordToggle = document.getElementById('password-toggle');
+        const passwordInput = document.getElementById('password');
+        const eyeOpen = document.getElementById('eye-open');
+        const eyeClosed = document.getElementById('eye-closed');
+
+        passwordToggle.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'block';
+            } else {
+                passwordInput.type = 'password';
+                eyeOpen.style.display = 'block';
+                eyeClosed.style.display = 'none';
+            }
+        });
+
+        // Input animations
+        const inputs = document.querySelectorAll('.input-field');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.style.transform = 'translateX(5px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.parentElement.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1430 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .tech-list-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .header-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .search-box {
+    position: relative;
+    width: 300px;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 45px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .search-box i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 18px;
+  }
+
+  .clear-search {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+    transition: color 0.3s ease;
+  }
+
+  .clear-search:hover {
+    color: #e74c3c;
+  }
+
+  .clear-search.show {
+    display: block;
+  }
+
+  .btn-add {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .tech-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .tech-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tech-card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tech-count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .tech-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tech-table thead {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .tech-table thead th {
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .tech-table tbody tr {
+    border-bottom: 1px solid #f1f3f5;
+    transition: all 0.3s ease;
+  }
+
+  .tech-table tbody tr:hover {
+    background: #f8f9fa;
+    transform: scale(1.01);
+  }
+
+  .tech-table tbody td {
+    padding: 20px;
+    font-size: 14px;
+    color: #495057;
+  }
+
+  .tech-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .tech-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: #f8f9fa;
+    padding: 10px;
+  }
+
+  .tech-details h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 4px 0;
+  }
+
+  .tech-details p {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 0;
+  }
+
+  .no-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-action {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-update {
+    background: #3498db;
+    color: white;
+  }
+
+  .btn-update:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-delete {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .empty-state i {
+    font-size: 64px;
+    color: #cbd5e0;
+    margin-bottom: 20px;
+  }
+
+  .empty-state h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 25px;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .no-results i {
+    font-size: 48px;
+    color: #cbd5e0;
+    margin-bottom: 15px;
+  }
+
+  .no-results p {
+    font-size: 14px;
+    color: #6c757d;
+  }
+
+  .highlight {
+    background: #fff3cd;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #e67e22;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  .current-image-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px dashed #e9ecef;
+    transition: all 0.3s ease;
+  }
+
+  .current-image-wrapper.has-new-image {
+    border-color: #27ae60;
+    background: #f8fff9;
+  }
+
+  .current-image-wrapper h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+
+  .current-image {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    object-fit: contain;
+    background: #f8f9fa;
+    padding: 15px;
+  }
+
+  .current-image.preview-new {
+    border: 3px solid #27ae60;
+    box-shadow: 0 4px 20px rgba(39, 174, 96, 0.3);
+  }
+
+  .image-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn-clear-image {
+    padding: 8px 16px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-clear-image:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+  }
+
+  .image-label {
+    margin-top: 10px;
+    padding: 6px 12px;
+    background: #27ae60;
+    color: white;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* File input styling */
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-input-custom {
+    padding: 12px 16px;
+    border: 2px dashed #e9ecef;
+    border-radius: 10px;
+    background: #f8f9fa;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6c757d;
+  }
+
+  .file-input-custom:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .file-input-custom.has-file {
+    border-color: #27ae60;
+    background: #e8f5e8;
+    color: #27ae60;
+  }
+
+  .tech-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .tech-category {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tech-category:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .tech-category.active {
+    border-color: #27ae60;
+    background: #e8f5e8;
+  }
+
+  .tech-category i {
+    font-size: 18px;
+    color: #6c757d;
+    margin-bottom: 5px;
+  }
+
+  .tech-category span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .btn-modal {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-cancel {
+    background: #e9ecef;
+    color: #495057;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-confirm-delete {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+  }
+
+  .btn-confirm-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+  }
+
+  .delete-warning {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .delete-warning i {
+    font-size: 64px;
+    color: #e74c3c;
+    margin-bottom: 20px;
+  }
+
+  .delete-warning h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .delete-warning p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+
+  .delete-tech-name {
+    font-weight: 700;
+    color: #e74c3c;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .header-right {
+      flex-direction: column;
+    }
+
+    .search-box {
+      width: 100%;
+    }
+
+    .tech-table thead th,
+    .tech-table tbody td {
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .tech-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn-action {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .modal-content {
+      width: 95%;
+      margin: 10px;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .current-image {
+      max-width: 100px;
+      max-height: 100px;
+    }
+
+    .image-actions {
+      flex-direction: column;
+    }
+
+    .tech-categories {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .header-left h2 {
+      font-size: 20px;
+    }
+
+    .tech-card-header {
+      padding: 20px;
+    }
+
+    .tech-card-header h3 {
+      font-size: 16px;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+    }
+
+    .btn-modal {
+      width: 100%;
+    }
+  }
+
+  /* Scrollbar Styling */
+  .table-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+  }
+
+  .table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+</style>
+
+<div class="tech-list-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Technologies</h2>
+      <p>Manage your technology stack and tools</p>
+    </div>
+    <div class="header-right">
+      <div class="search-box">
+        <i class="mdi mdi-magnify"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search by technology name..." 
+          autocomplete="off"
+        >
+        <button type="button" class="clear-search" id="clearSearch">
+          <i class="mdi mdi-close"></i>
+        </button>
+      </div>
+      <a href="{% url 'add_technologies' %}" class="btn-add">
+        <i class="mdi mdi-plus"></i>
+        Add Technology
+      </a>
+    </div>
+  </div>
+
+  <!-- Technologies Card -->
+  <div class="tech-card">
+    <div class="tech-card-header">
+      <h3>
+        <i class="mdi mdi-laptop"></i>
+        Technology Stack
+      </h3>
+      <span class="tech-count" id="techCount">{{ logo|length }} Technologies</span>
+    </div>
+
+    <div class="table-wrapper">
+      {% if logo %}
+      <table class="tech-table">
+        <thead>
+          <tr>
+            <th>Technology</th>
+            <th>Icon</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="techTableBody">
+          {% for tech in logo %}
+          <tr data-name="{{ tech.name|default:'Unnamed' }}">
+            <td>
+              <div class="tech-info">
+                {% if tech.logo %}
+                  <img src="{{ tech.logo.url }}" alt="{{ tech.name|default:'Technology Icon' }}" class="tech-icon">
+                {% else %}
+                  <div class="no-image">
+                    <i class="mdi mdi-cog"></i>
+                  </div>
+                {% endif %}
+                <div class="tech-details">
+                  <h4 class="tech-name">
+                    {% if tech.name %}
+                      {{ tech.name }}
+                    {% else %}
+                      Unnamed Technology
+                    {% endif %}
+                  </h4>
+                  <p class="tech-category">Technology</p>
+                </div>
+              </div>
+            </td>
+            <td>
+              {% if tech.logo %}
+                <img src="{{ tech.logo.url }}" alt="{{ tech.name|default:'Technology Icon' }}" class="tech-icon">
+              {% else %}
+                <div class="no-image">
+                  <i class="mdi mdi-cog"></i>
+                </div>
+              {% endif %}
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button 
+                  type="button" 
+                  class="btn-action btn-update" 
+                  onclick="openUpdateModal({{ tech.id }}, '{{ tech.name|default:"Unnamed"|escapejs }}', '{% if tech.logo %}{{ tech.logo.url }}{% endif %}')"
+                >
+                  <i class="mdi mdi-pencil"></i>
+                  Update
+                </button>
+                <button 
+                  type="button" 
+                  class="btn-action btn-delete" 
+                  onclick="openDeleteModal({{ tech.id }}, '{{ tech.name|default:"Unnamed Technology"|escapejs }}')"
+                >
+                  <i class="mdi mdi-delete"></i>
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="no-results" id="noResults" style="display: none;">
+        <i class="mdi mdi-magnify"></i>
+        <p>No technologies found matching your search.</p>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="mdi mdi-laptop-off"></i>
+        <h3>No Technologies Yet</h3>
+        <p>Start building your tech stack by adding your first technology</p>
+        <a href="{% url 'add_technologies' %}" class="btn-add">
+          <i class="mdi mdi-plus"></i>
+          Add First Technology
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Update Modal -->
+<div id="updateModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>
+        <i class="mdi mdi-pencil"></i>
+        Update Technology
+      </h3>
+      <button type="button" class="modal-close" onclick="closeUpdateModal()">
+        <i class="mdi mdi-close"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form method="POST" enctype="multipart/form-data" id="updateForm" action="">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label class="form-label">
+            Technology Name
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="name" 
+            id="updateName" 
+            placeholder="Enter technology name"
+            maxlength="50"
+          >
+          <div class="character-count" id="updateNameCount">0/50 characters</div>
+        </div>
+
+        {% comment %} <div class="form-group">
+          <label class="form-label">
+            Technology Category
+          </label>
+          <div class="tech-categories">
+            <div class="tech-category" data-category="frontend">
+              <i class="mdi mdi-monitor"></i>
+              <span>Frontend</span>
+            </div>
+            <div class="tech-category" data-category="backend">
+              <i class="mdi mdi-server"></i>
+              <span>Backend</span>
+            </div>
+            <div class="tech-category" data-category="database">
+              <i class="mdi mdi-database"></i>
+              <span>Database</span>
+            </div>
+            <div class="tech-category" data-category="devops">
+              <i class="mdi mdi-cog"></i>
+              <span>DevOps</span>
+            </div>
+            <div class="tech-category" data-category="mobile">
+              <i class="mdi mdi-cellphone"></i>
+              <span>Mobile</span>
+            </div>
+            <div class="tech-category" data-category="other">
+              <i class="mdi mdi-puzzle"></i>
+              <span>Other</span>
+            </div>
+          </div>
+          <input type="hidden" name="category" id="updateCategory">
+        </div> {% endcomment %}
+
+        <div class="current-image-wrapper" id="currentImageWrapper">
+          <h4>Current Icon</h4>
+          <img src="" alt="Current" class="current-image" id="currentImage">
+          <div class="image-actions" id="imageActions" style="display: none;">
+            <button type="button" class="btn-clear-image" onclick="clearImageSelection()">
+              <i class="mdi mdi-close"></i>
+              Clear New Icon
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Upload New Icon (Optional)
+          </label>
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              class="form-control" 
+              name="logo" 
+              id="imageInput"
+              accept="image/*"
+            >
+            <div class="file-input-custom" id="fileInputCustom">
+              <i class="mdi mdi-cloud-upload"></i>
+              Click to browse or drag & drop an icon
+              <br>
+              <small>Supports: PNG, SVG (Max: 2MB)</small>
+            </div>
+          </div>
+          <small style="color: #6c757d; font-size: 12px; margin-top: 6px; display: block;">
+            <i class="mdi mdi-information"></i> Leave empty to keep current icon
+          </small>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" onclick="closeUpdateModal()">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn-modal btn-submit">
+            <i class="mdi mdi-check"></i>
+            Update Technology
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+      <h3>
+        <i class="mdi mdi-alert"></i>
+        Delete Technology
+      </h3>
+      <button type="button" class="modal-close" onclick="closeDeleteModal()">
+        <i class="mdi mdi-close"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="delete-warning">
+        <i class="mdi mdi-alert-circle-outline"></i>
+        <h4>Are you sure?</h4>
+        <p>You are about to delete the technology</p>
+        <p class="delete-tech-name" id="deleteTechName"></p>
+        <p style="margin-top: 15px;">This action cannot be undone.</p>
+      </div>
+
+      <form method="POST" id="deleteForm" action="">
+        {% csrf_token %}
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" onclick="closeDeleteModal()">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn-modal btn-confirm-delete">
+            <i class="mdi mdi-delete"></i>
+            Yes, Delete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Search functionality
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  const techTableBody = document.getElementById('techTableBody');
+  const noResults = document.getElementById('noResults');
+  const techCount = document.getElementById('techCount');
+
+  // Modal elements
+  const updateModal = document.getElementById('updateModal');
+  const deleteModal = document.getElementById('deleteModal');
+  const imageInput = document.getElementById('imageInput');
+  const fileInputCustom = document.getElementById('fileInputCustom');
+  const currentImageWrapper = document.getElementById('currentImageWrapper');
+  const currentImage = document.getElementById('currentImage');
+  const imageActions = document.getElementById('imageActions');
+
+  // State variables
+  let currentTechId = null;
+  let originalImageUrl = null;
+
+  // Highlight text function
+  function highlightText(text, searchTerm) {
+    if (!searchTerm) return text;
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, '<span class="highlight">$1</span>');
+  }
+
+  // Remove highlighting
+  function removeHighlighting() {
+    const highlightedElements = document.querySelectorAll('.highlight');
+    highlightedElements.forEach(el => {
+      const parent = el.parentNode;
+      parent.replaceChild(document.createTextNode(el.textContent), el);
+      parent.normalize();
+    });
+  }
+
+  // Search functionality
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    
+    if (searchTerm) {
+      clearSearch.classList.add('show');
+    } else {
+      clearSearch.classList.remove('show');
+      removeHighlighting();
+    }
+
+    const rows = techTableBody.getElementsByTagName('tr');
+    let visibleCount = 0;
+
+    Array.from(rows).forEach(row => {
+      const name = row.getAttribute('data-name').toLowerCase();
+      
+      if (name.includes(searchTerm)) {
+        row.style.display = '';
+        visibleCount++;
+        
+        // Highlight matching text
+        const nameElement = row.querySelector('.tech-name');
+        
+        if (nameElement) {
+          nameElement.innerHTML = highlightText(row.getAttribute('data-name'), searchTerm);
+        }
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Show/hide no results message
+    if (visibleCount === 0 && searchTerm) {
+      noResults.style.display = 'block';
+      techTableBody.parentElement.style.display = 'none';
+    } else {
+      noResults.style.display = 'none';
+      techTableBody.parentElement.style.display = 'table';
+    }
+
+    // Update count
+    techCount.textContent = `${visibleCount} Technolog${visibleCount !== 1 ? 'ies' : 'y'}`;
+  });
+
+  clearSearch.addEventListener('click', function() {
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input'));
+    searchInput.focus();
+  });
+
+  // Modal functionality
+  function openUpdateModal(id, name, imageUrl) {
+    currentTechId = id;
+    originalImageUrl = imageUrl;
+    
+    // Set form action URL
+    document.getElementById('updateForm').action = `{% url 'update_technologies' 0 %}`.replace('0', id);
+    
+    // Populate form fields
+    document.getElementById('updateName').value = name;
+    
+    // Update character count
+    updateCharacterCount(document.getElementById('updateName'), document.getElementById('updateNameCount'), 50);
+    
+    // Handle image display
+    if (imageUrl) {
+      currentImage.src = imageUrl;
+      currentImageWrapper.style.display = 'block';
+    } else {
+      currentImageWrapper.style.display = 'none';
+    }
+    
+    // Reset file input and preview
+    resetImagePreview();
+    
+    // Setup category selection
+    setupCategorySelection();
+    
+    // Show modal
+    updateModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeUpdateModal() {
+    updateModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+    resetImagePreview();
+  }
+
+  function openDeleteModal(id, name) {
+    // Set form action URL
+    document.getElementById('deleteForm').action = `{% url 'delete_technologies' 0 %}`.replace('0', id);
+    
+    // Set technology name in confirmation message
+    document.getElementById('deleteTechName').textContent = name;
+    
+    // Show modal
+    deleteModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDeleteModal() {
+    deleteModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+  }
+
+  // Category selection functionality
+  function setupCategorySelection() {
+    const categoryButtons = document.querySelectorAll('.tech-category');
+    const categoryInput = document.getElementById('updateCategory');
+    
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Set the category value
+        categoryInput.value = this.getAttribute('data-category');
+      });
+    });
+  }
+
+  // Character count functionality
+  function updateCharacterCount(element, countElement, maxLength) {
+    const currentLength = element.value.length;
+    countElement.textContent = `${currentLength}/${maxLength} characters`;
+    
+    if (currentLength > maxLength * 0.9) {
+      countElement.classList.add('warning');
+      countElement.classList.remove('error');
+    } else if (currentLength > maxLength) {
+      countElement.classList.add('error');
+      countElement.classList.remove('warning');
+    } else {
+      countElement.classList.remove('warning', 'error');
+    }
+  }
+
+  // Image preview functionality
+  function setupImagePreview() {
+    imageInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      
+      if (file) {
+        // Validate file type
+        if (!file.type.match('image.*')) {
+          alert('Please select a valid image file (PNG, SVG, etc.)');
+          resetImagePreview();
+          return;
+        }
+        
+        // Validate file size (max 2MB for icons)
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Icon size should be less than 2MB');
+          resetImagePreview();
+          return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          // Update image preview
+          currentImage.src = e.target.result;
+          currentImage.classList.add('preview-new');
+          currentImageWrapper.style.display = 'block';
+          currentImageWrapper.classList.add('has-new-image');
+          
+          // Show clear button
+          imageActions.style.display = 'flex';
+          
+          // Update file input display
+          fileInputCustom.classList.add('has-file');
+          fileInputCustom.innerHTML = `
+            <i class="mdi mdi-check-circle" style="color: #27ae60;"></i>
+            ${file.name}
+            <br>
+            <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+          `;
+        };
+        
+        reader.onerror = function() {
+          alert('Error reading the image file. Please try again.');
+          resetImagePreview();
+        };
+        
+        reader.readAsDataURL(file);
+      } else {
+        resetImagePreview();
+      }
+    });
+
+    // Drag and drop functionality
+    fileInputCustom.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.style.borderColor = '#3498db';
+      this.style.background = '#e3f2fd';
+    });
+
+    fileInputCustom.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      if (!fileInputCustom.classList.contains('has-file')) {
+        this.style.borderColor = '#e9ecef';
+        this.style.background = '#f8f9fa';
+      }
+    });
+
+    fileInputCustom.addEventListener('drop', function(e) {
+      e.preventDefault();
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        imageInput.files = files;
+        imageInput.dispatchEvent(new Event('change'));
+      }
+    });
+  }
+
+  function resetImagePreview() {
+    imageInput.value = '';
+    currentImage.classList.remove('preview-new');
+    currentImageWrapper.classList.remove('has-new-image');
+    imageActions.style.display = 'none';
+    fileInputCustom.classList.remove('has-file');
+    fileInputCustom.innerHTML = `
+      <i class="mdi mdi-cloud-upload"></i>
+      Click to browse or drag & drop an icon
+      <br>
+      <small>Supports: PNG, SVG (Max: 2MB)</small>
+    `;
+    
+    if (originalImageUrl) {
+      currentImage.src = originalImageUrl;
+      currentImageWrapper.style.display = 'block';
+    } else {
+      currentImageWrapper.style.display = 'none';
+    }
+  }
+
+  function clearImageSelection() {
+    resetImagePreview();
+  }
+
+  // Close modals when clicking outside
+  window.addEventListener('click', function(event) {
+    if (event.target === updateModal) {
+      closeUpdateModal();
+    }
+    if (event.target === deleteModal) {
+      closeDeleteModal();
+    }
+  });
+
+  // Close modals with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeUpdateModal();
+      closeDeleteModal();
+    }
+  });
+
+  // Form validation
+  document.getElementById('updateForm').addEventListener('submit', function(e) {
+    const name = document.getElementById('updateName').value.trim();
+    
+    if (name.length > 50) {
+      e.preventDefault();
+      alert('Technology name must be 50 characters or less.');
+      return false;
+    }
+    
+    // Validate file if selected
+    if (imageInput.files.length > 0) {
+      const file = imageInput.files[0];
+      if (!file.type.match('image.*')) {
+        e.preventDefault();
+        alert('Please select a valid image file.');
+        return false;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        e.preventDefault();
+        alert('Icon size should be less than 2MB.');
+        return false;
+      }
+    }
+  });
+
+  // Initialize page
+  document.addEventListener('DOMContentLoaded', function() {
+    // Focus search input on page load
+    if (searchInput) {
+      searchInput.focus();
+    }
+    
+    // Add loading animation to table rows
+    const rows = techTableBody.getElementsByTagName('tr');
+    Array.from(rows).forEach((row, index) => {
+      row.style.animationDelay = `${index * 0.1}s`;
+    });
+    
+    // Setup image preview functionality
+    setupImagePreview();
+    
+    // Setup character count listener for update modal
+    const updateName = document.getElementById('updateName');
+    
+    if (updateName) {
+      updateName.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('updateNameCount'), 50);
+      });
+    }
+  });
+</script>
+{% endblock %}

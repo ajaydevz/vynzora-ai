@@ -1,0 +1,1095 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-website-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .btn-back {
+    padding: 12px 24px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-back:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+
+  .website-form-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .website-form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+  }
+
+  .website-form-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .website-form-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #e67e22;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  /* File input styling */
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-input-custom {
+    padding: 20px;
+    border: 2px dashed #e9ecef;
+    border-radius: 10px;
+    background: #f8f9fa;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6c757d;
+  }
+
+  .file-input-custom:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .file-input-custom.has-file {
+    border-color: #27ae60;
+    background: #e8f5e8;
+    color: #27ae60;
+  }
+
+  .image-preview {
+    margin-top: 20px;
+    text-align: center;
+    display: none;
+  }
+
+  .image-preview.show {
+    display: block;
+  }
+
+  .preview-image {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+  }
+
+  .preview-info {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  /* Services Section */
+  .services-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .services-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .services-header h5 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .service-group {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+  }
+
+  .service-group:hover {
+    border-color: #3498db;
+    background: #f1f9fe;
+  }
+
+  .service-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .service-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: #3498db;
+    background: #e3f2fd;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .btn-remove-service {
+    padding: 6px 12px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-remove-service:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+  }
+
+  .btn-add-service {
+    padding: 12px 24px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-add-service:hover {
+    background: #219653;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn-form {
+    flex: 1;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-cancel {
+    background: #e9ecef;
+    color: #495057;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-submit:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e9ecef, transparent);
+    margin: 30px 0;
+  }
+
+  /* CKEditor Styling */
+  .ck-editor {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ck.ck-editor__editable:not(.ck-editor__nested-editable) {
+    min-height: 200px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  .ck.ck-editor__editable:not(.ck-editor__nested-editable):focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .add-website-container {
+      margin: 0 15px;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .website-form-body {
+      padding: 20px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn-form {
+      width: 100%;
+    }
+
+    .service-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .preview-image {
+      max-width: 150px;
+      max-height: 120px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .header-left h2 {
+      font-size: 20px;
+    }
+
+    .website-form-header {
+      padding: 20px;
+    }
+
+    .website-form-header h3 {
+      font-size: 16px;
+    }
+
+    .service-group {
+      padding: 15px;
+    }
+  }
+</style>
+
+<div class="add-website-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Add Website Details</h2>
+      <p>Create a new website entry with comprehensive details</p>
+    </div>
+    <a href="{% url 'view_websites' %}" class="btn-back">
+      <i class="mdi mdi-arrow-left"></i>
+      Back to Websites
+    </a>
+  </div>
+
+  <!-- Website Form Card -->
+  <div class="website-form-card">
+    <div class="website-form-header">
+      <h3>
+        <i class="mdi mdi-web"></i>
+        Website Information
+      </h3>
+    </div>
+
+    <div class="website-form-body">
+      <form class="forms-sample" method="POST" enctype="multipart/form-data" id="websiteForm">
+        {% csrf_token %}
+
+        <!-- Category -->
+        <div class="form-group">
+          <label class="form-label">
+            Category<span class="required">*</span>
+          </label>
+          <select class="form-control" id="category" name="category" required>
+            <option value="">Select a category</option>
+            {% for category in categories %}
+              <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Main Title -->
+<div class="form-group">
+  <label class="form-label">
+    Main Title
+  </label>
+  <input 
+    type="text" 
+    class="form-control" 
+    id="main_title" 
+    name="main_title" 
+    placeholder="Enter main title"
+    maxlength="200"
+  >
+  <div class="character-count" id="mainTitleCount">0/50 characters</div>
+</div>
+
+
+        <!-- Website Name -->
+        <div class="form-group">
+          <label class="form-label">
+            Website Name<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="name" 
+            name="name" 
+            placeholder="Enter website name"
+            required
+            maxlength="100"
+          >
+          <div class="character-count" id="nameCount">0/100 characters</div>
+        </div>
+
+        <!-- Slug -->
+        <div class="form-group">
+          <label class="form-label">
+            Slug<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="slug" 
+            name="slug" 
+            placeholder="Enter URL slug"
+            required
+            maxlength="100"
+          >
+          <div class="character-count" id="slugCount">0/100 characters</div>
+        </div>
+
+        <!-- Meta Title -->
+        <div class="form-group">
+          <label class="form-label">
+            Meta Title<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="meta_title" 
+            name="meta_title" 
+            placeholder="Enter meta title for SEO"
+            required
+            maxlength="60"
+          >
+          <div class="character-count" id="metaTitleCount">0/60 characters</div>
+        </div>
+
+        <!-- Meta Description -->
+        <div class="form-group">
+          <label class="form-label">
+            Meta Description
+          </label>
+          <textarea 
+            class="form-control" 
+            id="meta_description" 
+            name="meta_description" 
+            rows="4" 
+            placeholder="Enter meta description for SEO"
+            maxlength="160"
+          ></textarea>
+          <div class="character-count" id="metaDescriptionCount">0/160 characters</div>
+        </div>
+
+        <!-- Website Description -->
+        <div class="form-group">
+          <label class="form-label">
+            Website Description
+          </label>
+          <textarea 
+            class="form-control" 
+            id="description" 
+            name="description" 
+            rows="5" 
+            placeholder="Enter detailed website description"
+            maxlength="130"
+          ></textarea>
+          <div class="character-count" id="descriptionCount">0/130 characters</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Additional Name<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="add_title" 
+            name="add_title" 
+            placeholder="Enter additinal name"
+            required
+            maxlength="100"
+          >
+          <div class="character-count" id="addCount">0/100 characters</div>
+        </div>
+
+        <!-- Additional Description -->
+        <div class="form-group">
+          <label class="form-label">
+            Additional Description
+          </label>
+          <textarea 
+            class="form-control" 
+            id="add_description" 
+            name="add_description" 
+            rows="5" 
+            placeholder="Enter additional details (supports rich text)"
+          ></textarea>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="form-group">
+          <label class="form-label">
+            Website Image<span class="required">*</span>
+          </label>
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              class="form-control" 
+              id="image" 
+              name="image" 
+              accept="image/*"
+              required
+            >
+            <div class="file-input-custom" id="fileInputCustom">
+              <i class="mdi mdi-cloud-upload" style="font-size: 24px; margin-bottom: 8px;"></i>
+              <div>Click to browse or drag & drop website image</div>
+              <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+            </div>
+          </div>
+          
+          <div class="image-preview" id="imagePreview">
+            <h4 style="font-size: 14px; color: #2c3e50; margin-bottom: 10px;">Image Preview</h4>
+            <img src="" alt="Preview" class="preview-image" id="previewImage">
+            <div class="preview-info" id="previewInfo"></div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Services Section -->
+        <div class="services-section">
+          <div class="services-header">
+            <h5>
+              <i class="mdi mdi-cog"></i>
+              Services Offered
+            </h5>
+          </div>
+          
+          <div id="services-container">
+            <div class="service-group">
+              <div class="service-header">
+                <span class="service-number">Service #1</span>
+                <button type="button" class="btn-remove-service" onclick="removeService(this)" style="display: none;">
+                  <i class="mdi mdi-delete"></i>
+                  Remove
+                </button>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Service Name</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  name="service_heading[]" 
+                  placeholder="Enter service name"
+                  maxlength="100"
+                >
+                <div class="character-count">0/100 characters</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Service Description</label>
+                <textarea 
+                  class="form-control" 
+                  name="service_description[]" 
+                  rows="3" 
+                  placeholder="Describe this service"
+                  maxlength="2000"
+                ></textarea>
+                <div class="character-count">0/2000 characters</div>
+              </div>
+            </div>
+          </div>
+          
+          <button type="button" class="btn-add-service" id="add-service">
+            <i class="mdi mdi-plus"></i>
+            Add Another Service
+          </button>
+        </div>
+
+        <div class="section-divider"></div>
+
+<!-- FAQ Section -->
+<div class="services-section">
+  <div class="services-header">
+    <h5>
+      <i class="mdi mdi-comment-question-outline"></i>
+      Frequently Asked Questions
+    </h5>
+  </div>
+  
+  <div id="faq-container">
+    <div class="service-group">
+      <div class="service-header">
+        <span class="service-number">FAQ #1</span>
+        <button type="button" class="btn-remove-service" onclick="removeFAQ(this)" style="display: none;">
+          <i class="mdi mdi-delete"></i>
+          Remove
+        </button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Question</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          name="faq_question[]" 
+          placeholder="Enter FAQ question"
+          maxlength="255"
+        >
+      </div>
+      <div class="form-group">
+        <label class="form-label">Answer</label>
+        <textarea 
+          class="form-control" 
+          name="faq_answer[]" 
+          rows="3" 
+          placeholder="Enter FAQ answer"
+          maxlength="1000"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+  
+  <button type="button" class="btn-add-service" id="add-faq">
+    <i class="mdi mdi-plus"></i>
+    Add Another FAQ
+  </button>
+</div>
+
+
+        <div class="form-actions">
+          <a href="#" class="btn-form btn-cancel">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </a>
+          <button type="submit" class="btn-form btn-submit" id="submitBtn">
+            <i class="mdi mdi-check"></i>
+            Create Website
+          </button>
+        </div>
+
+        
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize CKEditor
+    ClassicEditor
+      .create(document.querySelector('#add_description'), {
+        toolbar: [
+          'heading', '|',
+          'bold', 'italic', 'underline', 'strikethrough', 'link', '|',
+          'bulletedList', 'numberedList', 'blockQuote', '|',
+          'insertTable', 'imageUpload', 'mediaEmbed', 'undo', 'redo'
+        ],
+        simpleUpload: {
+          uploadUrl: '{% url "ckeditor_upload" %}',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+    // Character count functionality
+    function updateCharacterCount(element, countElement, maxLength) {
+      const currentLength = element.value.length;
+      countElement.textContent = `${currentLength}/${maxLength} characters`;
+      
+      if (currentLength > maxLength * 0.9) {
+        countElement.classList.add('warning');
+        countElement.classList.remove('error');
+      } else if (currentLength > maxLength) {
+        countElement.classList.add('error');
+        countElement.classList.remove('warning');
+      } else {
+        countElement.classList.remove('warning', 'error');
+      }
+    }
+
+    // Setup character counters
+    const mainTitleInput = document.getElementById('main_title');
+
+    const nameInput = document.getElementById('name');
+    const nameInput1 = document.getElementById('add_title');
+    const slugInput = document.getElementById('slug');
+    const metaTitleInput = document.getElementById('meta_title');
+    const metaDescriptionInput = document.getElementById('meta_description');
+    const descriptionInput = document.getElementById('description');
+
+    mainTitleInput.addEventListener('input', function() {
+      updateCharacterCount(this, document.getElementById('mainTitleCount'), 50);
+    });
+
+    nameInput.addEventListener('input', function() {
+      updateCharacterCount(this, document.getElementById('nameCount'), 100);
+    });
+    nameInput1.addEventListener('input', function() {
+      updateCharacterCount(this, document.getElementById('addCount'), 100);
+    });
+
+    slugInput.addEventListener('input', function() {
+      updateCharacterCount(this, document.getElementById('slugCount'), 100);
+    });
+
+    metaTitleInput.addEventListener('input', function() {
+      updateCharacterCount(this, document.getElementById('metaTitleCount'), 60);
+    });
+
+    metaDescriptionInput.addEventListener('input', function() {
+      updateCharacterCount(this, document.getElementById('metaDescriptionCount'), 160);
+    });
+
+    descriptionInput.addEventListener('input', function() {
+      updateCharacterCount(this, document.getElementById('descriptionCount'), 1000);
+    });
+
+    // Auto-generate slug from name
+    nameInput.addEventListener('blur', function() {
+      if (this.value && !slugInput.value) {
+        const slug = this.value
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_-]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        slugInput.value = slug;
+        updateCharacterCount(slugInput, document.getElementById('slugCount'), 100);
+      }
+    });
+
+    // ========== FAQ Section ==========
+const faqContainer = document.getElementById('faq-container');
+const addFAQButton = document.getElementById('add-faq');
+
+// Function to renumber FAQs after adding/removing
+function renumberFAQs() {
+  faqContainer.querySelectorAll('.service-group').forEach((faq, index) => {
+    faq.querySelector('.service-number').textContent = `FAQ #${index + 1}`;
+  });
+}
+
+// Function to handle FAQ removal (delegated event)
+function removeFAQ(button) {
+  const faqGroups = faqContainer.querySelectorAll('.service-group');
+  if (faqGroups.length > 1) {
+    button.closest('.service-group').remove();
+    renumberFAQs();
+  } else {
+    alert("At least one FAQ section must remain.");
+  }
+}
+
+// Add new FAQ
+addFAQButton.addEventListener('click', () => {
+  const faqGroups = faqContainer.querySelectorAll('.service-group');
+  const newFAQ = faqGroups[0].cloneNode(true);
+
+  // Reset inputs
+  newFAQ.querySelectorAll('input, textarea').forEach(input => input.value = '');
+
+  // Show remove button
+  newFAQ.querySelector('.btn-remove-service').style.display = 'inline-flex';
+
+  // Append to container
+  faqContainer.appendChild(newFAQ);
+
+  // Renumber all FAQs
+  renumberFAQs();
+});
+
+// Use event delegation so dynamically added buttons also work
+faqContainer.addEventListener('click', function (event) {
+  if (event.target.closest('.btn-remove-service')) {
+    removeFAQ(event.target.closest('.btn-remove-service'));
+  }
+});
+    // ========== End FAQ Section ==========
+    
+
+    // Image preview functionality
+    const imageInput = document.getElementById('image');
+    const fileInputCustom = document.getElementById('fileInputCustom');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const previewInfo = document.getElementById('previewInfo');
+
+    imageInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      
+      if (file) {
+        // Validate file type
+        if (!file.type.match('image.*')) {
+          alert('Please select a valid image file (JPEG, PNG, WebP, etc.)');
+          resetImagePreview();
+          return;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Image size should be less than 5MB');
+          resetImagePreview();
+          return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          // Update preview
+          previewImage.src = e.target.result;
+          imagePreview.classList.add('show');
+          
+          // Get image dimensions for preview info
+          const img = new Image();
+          img.onload = function() {
+            previewInfo.innerHTML = `
+              <div>Dimensions: ${img.width} × ${img.height}px</div>
+              <div>Size: ${(file.size / 1024).toFixed(2)} KB</div>
+              <div>Type: ${file.type}</div>
+            `;
+          };
+          img.src = e.target.result;
+          
+          // Update file input display
+          fileInputCustom.classList.add('has-file');
+          fileInputCustom.innerHTML = `
+            <i class="mdi mdi-check-circle" style="color: #27ae60; font-size: 24px; margin-bottom: 8px;"></i>
+            <div>${file.name}</div>
+            <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+          `;
+        };
+        
+        reader.onerror = function() {
+          alert('Error reading the image file. Please try again.');
+          resetImagePreview();
+        };
+        
+        reader.readAsDataURL(file);
+      } else {
+        resetImagePreview();
+      }
+    });
+
+    function resetImagePreview() {
+      imageInput.value = '';
+      imagePreview.classList.remove('show');
+      fileInputCustom.classList.remove('has-file');
+      fileInputCustom.innerHTML = `
+        <i class="mdi mdi-cloud-upload" style="font-size: 24px; margin-bottom: 8px;"></i>
+        <div>Click to browse or drag & drop website image</div>
+        <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+      `;
+    }
+
+    // Drag and drop functionality
+    fileInputCustom.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.style.borderColor = '#3498db';
+      this.style.background = '#e3f2fd';
+    });
+
+    fileInputCustom.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      if (!fileInputCustom.classList.contains('has-file')) {
+        this.style.borderColor = '#e9ecef';
+        this.style.background = '#f8f9fa';
+      }
+    });
+
+    fileInputCustom.addEventListener('drop', function(e) {
+      e.preventDefault();
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        imageInput.files = files;
+        imageInput.dispatchEvent(new Event('change'));
+      }
+    });
+
+    // Services functionality
+    let serviceCount = 1;
+
+    document.getElementById('add-service').addEventListener('click', function() {
+      serviceCount++;
+      const container = document.getElementById('services-container');
+      const div = document.createElement('div');
+      div.classList.add('service-group');
+      div.innerHTML = `
+        <div class="service-header">
+          <span class="service-number">Service #${serviceCount}</span>
+          <button type="button" class="btn-remove-service" onclick="removeService(this)">
+            <i class="mdi mdi-delete"></i>
+            Remove
+          </button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service Name</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="service_heading[]" 
+            placeholder="Enter service name"
+            maxlength="100"
+          >
+          <div class="character-count">0/100 characters</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service Description</label>
+          <textarea 
+            class="form-control" 
+            name="service_description[]" 
+            rows="3" 
+            placeholder="Describe this service"
+            maxlength="1000"
+          ></textarea>
+          <div class="character-count">0/1000 characters</div>
+        </div>
+      `;
+      container.appendChild(div);
+
+      // Add character count functionality to new inputs
+      const newInputs = div.querySelectorAll('input[type="text"], textarea');
+      newInputs.forEach(input => {
+        const countElement = input.parentElement.querySelector('.character-count');
+        const maxLength = input.getAttribute('maxlength');
+        
+        input.addEventListener('input', function() {
+          updateCharacterCount(this, countElement, parseInt(maxLength));
+        });
+      });
+    });
+
+    // Add character count to initial service inputs
+    const initialInputs = document.querySelectorAll('#services-container input[type="text"], #services-container textarea');
+    initialInputs.forEach(input => {
+      const countElement = input.parentElement.querySelector('.character-count');
+      const maxLength = input.getAttribute('maxlength');
+      
+      input.addEventListener('input', function() {
+        updateCharacterCount(this, countElement, parseInt(maxLength));
+      });
+    });
+  });
+
+  function removeService(button) {
+    const serviceGroup = button.closest('.service-group');
+    serviceGroup.remove();
+    
+    // Update service numbers
+    const services = document.querySelectorAll('.service-group');
+    services.forEach((service, index) => {
+      const numberElement = service.querySelector('.service-number');
+      numberElement.textContent = `Service #${index + 1}`;
+    });
+  }
+
+  // Form validation
+  document.getElementById('websiteForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Basic validation
+    const requiredFields = this.querySelectorAll('[required]');
+    requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+        isValid = false;
+        field.style.borderColor = '#e74c3c';
+      } else {
+        field.style.borderColor = '';
+      }
+    });
+    
+    if (!isValid) {
+      e.preventDefault();
+      alert('Please fill in all required fields.');
+    }
+  });
+</script>
+{% endblock %}

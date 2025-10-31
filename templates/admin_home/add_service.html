@@ -1,0 +1,1127 @@
+{% extends 'admin_home/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-service-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    margin-bottom: 30px;
+  }
+
+  .page-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .page-header p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .form-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 25px;
+  }
+
+  .form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    color: white;
+    text-align: center;
+  }
+
+  .form-header i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+  }
+
+  .form-header h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .form-header p {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .form-body {
+    padding: 40px;
+  }
+
+  .form-section {
+    margin-bottom: 30px;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title i {
+    color: #3498db;
+    font-size: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .form-control:hover {
+    border-color: #cbd5e0;
+  }
+
+  textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  /* Specific textarea heights */
+  textarea.offer-description {
+    min-height: 80px;
+    max-height: 80px;
+    resize: none;
+  }
+
+  textarea.step-tagline {
+    min-height: 50px;
+    max-height: 50px;
+    resize: none;
+  }
+
+  textarea.faq-answer {
+    min-height: 100px;
+    max-height: 120px;
+    resize: vertical;
+  }
+
+  .input-icon-wrapper {
+    position: relative;
+  }
+
+  .input-icon-wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 18px;
+  }
+
+  .input-icon-wrapper .form-control {
+    padding-left: 48px;
+  }
+
+  .file-upload-wrapper {
+    position: relative;
+  }
+
+  .file-upload-box {
+    border: 2px dashed #cbd5e0;
+    border-radius: 10px;
+    padding: 40px 20px;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .file-upload-box:hover {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.05);
+  }
+
+  .file-upload-icon {
+    font-size: 48px;
+    color: #3498db;
+    margin-bottom: 15px;
+  }
+
+  .file-upload-text h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .file-upload-text p {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 0;
+  }
+
+  .file-upload-input {
+    display: none;
+  }
+
+  .image-preview {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .image-preview.show {
+    display: block;
+  }
+
+  .preview-image {
+    max-width: 250px;
+    max-height: 250px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+  }
+
+  .preview-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 12px 20px;
+    background: #e8f5e9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  .preview-info i {
+    color: #2ecc71;
+    font-size: 20px;
+  }
+
+  .preview-info span {
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: 500;
+  }
+
+  .remove-image-btn {
+    padding: 8px 20px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .remove-image-btn:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+  }
+
+  /* Dynamic Formset Styles */
+  .formset-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+
+  .formset-item {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 2px solid #e9ecef;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .formset-item:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+  }
+
+  .formset-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f1f3f5;
+  }
+
+  .formset-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .formset-number {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .btn-remove-formset {
+    padding: 6px 14px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-remove-formset:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+  }
+
+  .btn-add-formset {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .btn-add-formset:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(46, 204, 113, 0.3);
+  }
+
+  .formset-limit-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 2px solid #f1f3f5;
+  }
+
+  .btn {
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    flex: 1;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-secondary {
+    background: #e9ecef;
+    color: #495057;
+    flex: 1;
+  }
+
+  .btn-secondary:hover {
+    background: #dee2e6;
+  }
+
+  .btn i {
+    font-size: 18px;
+  }
+
+  .help-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .help-text i {
+    font-size: 14px;
+  }
+
+  /* Hide Django default formset elements */
+  input[type="hidden"] {
+    display: none;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .form-body {
+      padding: 30px 20px;
+    }
+
+    .form-header {
+      padding: 25px 20px;
+    }
+
+    .formset-container {
+      padding: 20px 15px;
+    }
+
+    .formset-item {
+      padding: 15px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+
+<div class="add-service-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h2>{{ title }}</h2>
+    <p>{% if title == "Add Service" %}Create a new service with details{% else %}Update service information{% endif %}</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <div class="form-header">
+      <i class="mdi mdi-briefcase-plus"></i>
+      <h3>{{ title }}</h3>
+      <p>Fill in all the required information below</p>
+    </div>
+
+    <div class="form-body">
+      <form method="POST" enctype="multipart/form-data" id="serviceForm">
+        {% csrf_token %}
+        
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-information"></i>
+            <span>Basic Information</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Service Name<span class="required">*</span>
+            </label>
+            <div class="input-icon-wrapper">
+              <i class="mdi mdi-briefcase"></i>
+              {{ form.name }}
+            </div>
+            <div class="help-text">
+              <i class="mdi mdi-information"></i>
+              <span>Enter the name of the service</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Description<span class="required">*</span>
+            </label>
+            {{ form.description }}
+            <div class="help-text">
+              <i class="mdi mdi-information"></i>
+              <span>Provide a detailed description of the service</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Image Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-image"></i>
+            <span>Service Image</span>
+          </div>
+
+          <div class="file-upload-wrapper">
+            <div class="file-upload-box" id="fileUploadBox">
+              <div class="file-upload-icon">
+                <i class="mdi mdi-cloud-upload"></i>
+              </div>
+              <div class="file-upload-text">
+                <h4>Click to upload or drag and drop</h4>
+                <p>PNG, JPG, JPEG (Max size: 5MB)</p>
+              </div>
+              {{ form.image }}
+            </div>
+
+            <div class="image-preview" id="imagePreview">
+              <img src="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}" alt="Preview" class="preview-image" id="previewImg">
+              <div class="preview-info">
+                <i class="mdi mdi-check-circle"></i>
+                <span id="fileName">Image uploaded successfully</span>
+              </div>
+              <button type="button" class="remove-image-btn" id="removeImageBtn">
+                <i class="mdi mdi-delete"></i> Remove Image
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Offers Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-star-circle"></i>
+            <span>Service Offers</span>
+          </div>
+
+          <div class="formset-container">
+            {{ offer_formset.management_form }}
+            <div id="offerFormset">
+              {% for offer_form in offer_formset %}
+              <div class="formset-item" {% if forloop.counter > 1 %}style="display:none;"{% endif %}>
+                <div class="formset-header">
+                  <div class="formset-title">
+                    <span class="formset-number">{{ forloop.counter }}</span>
+                    Offer {{ forloop.counter }}
+                  </div>
+                  {% if not forloop.first %}
+                  <button type="button" class="btn-remove-formset" onclick="removeFormsetItem(this, 'offer')">
+                    <i class="mdi mdi-delete"></i> Remove
+                  </button>
+                  {% endif %}
+                </div>
+                {{ offer_form.id }}
+                {{ offer_form.DELETE }}
+                <div class="form-group">
+                  <label class="form-label">Title<span class="required">*</span></label>
+                  {{ offer_form.title }}
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Description (Max 3 lines)<span class="required">*</span></label>
+                  {{ offer_form.description }}
+                  <div class="help-text">
+                    <i class="mdi mdi-information"></i>
+                    <span>Keep it brief - maximum 3 lines</span>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <button type="button" class="btn-add-formset" onclick="addFormsetItem('offer')">
+              <i class="mdi mdi-plus"></i> Add Another Offer
+            </button>
+          </div>
+        </div>
+
+        <!-- Process Steps Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-list-status"></i>
+            <span>Process Steps</span>
+          </div>
+
+          <div class="formset-container">
+            {{ step_formset.management_form }}
+            <div id="stepFormset">
+              {% for step_form in step_formset %}
+              <div class="formset-item">
+                <div class="formset-header">
+                  <div class="formset-title">
+                    <span class="formset-number">{{ forloop.counter }}</span>
+                    Step {{ forloop.counter }}
+                  </div>
+                  <button type="button" class="btn-remove-formset" onclick="removeFormsetItem(this, 'step')">
+                    <i class="mdi mdi-delete"></i> Remove
+                  </button>
+                </div>
+                {{ step_form.id }}
+                {{ step_form.DELETE }}
+                <div class="form-group">
+                  <label class="form-label">Step Title<span class="required">*</span></label>
+                  {{ step_form.title }}
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tagline (Single line)<span class="required">*</span></label>
+                  {{ step_form.tagline }}
+                  <div class="help-text">
+                    <i class="mdi mdi-information"></i>
+                    <span>Brief description - single line only</span>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <button type="button" class="btn-add-formset" id="addStepBtn" onclick="addFormsetItem('step')">
+              <i class="mdi mdi-plus"></i> Add Another Step
+            </button>
+            <div class="formset-limit-text">
+              <i class="mdi mdi-information"></i>
+              <span>Maximum 4 process steps allowed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQs Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="mdi mdi-help-circle"></i>
+            <span>Frequently Asked Questions</span>
+          </div>
+
+          <div class="formset-container">
+            {{ faq_formset.management_form }}
+            <div id="faqFormset">
+              {% for faq_form in faq_formset %}
+              <div class="formset-item" {% if forloop.counter > 1 %}style="display:none;"{% endif %}>
+                <div class="formset-header">
+                  <div class="formset-title">
+                    <span class="formset-number">{{ forloop.counter }}</span>
+                    FAQ {{ forloop.counter }}
+                  </div>
+                  {% if not forloop.first %}
+                  <button type="button" class="btn-remove-formset" onclick="removeFormsetItem(this, 'faq')">
+                    <i class="mdi mdi-delete"></i> Remove
+                  </button>
+                  {% endif %}
+                </div>
+                {{ faq_form.id }}
+                {{ faq_form.DELETE }}
+                <div class="form-group">
+                  <label class="form-label">Question<span class="required">*</span></label>
+                  {{ faq_form.question }}
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Answer (Max 4-5 lines)<span class="required">*</span></label>
+                  {{ faq_form.answer }}
+                  <div class="help-text">
+                    <i class="mdi mdi-information"></i>
+                    <span>Keep answers concise - maximum 4-5 lines</span>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <button type="button" class="btn-add-formset" id="addFaqBtn" onclick="addFormsetItem('faq')">
+              <i class="mdi mdi-plus"></i> Add Another FAQ
+            </button>
+            <div class="formset-limit-text">
+              <i class="mdi mdi-information"></i>
+              <span>Maximum 6 FAQs allowed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+            <i class="mdi mdi-arrow-left"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="mdi mdi-check"></i>
+            {{ title }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // File upload functionality
+  const fileUploadBox = document.getElementById('fileUploadBox');
+  const fileInput = document.querySelector('input[name="image"]');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  const fileName = document.getElementById('fileName');
+  const removeImageBtn = document.getElementById('removeImageBtn');
+
+  // Show existing image on update
+  if (fileInput && previewImg.src && previewImg.src !== window.location.href) {
+    fileUploadBox.style.display = 'none';
+    imagePreview.classList.add('show');
+  }
+
+  // Add classes to form inputs and apply specific classes for textareas
+  document.querySelectorAll('input[type="text"], textarea').forEach(input => {
+    input.classList.add('form-control');
+    
+    // Apply specific classes based on field names
+    if (input.name && input.name.includes('description') && input.name.includes('offer')) {
+      input.classList.add('offer-description');
+      input.setAttribute('rows', '3');
+      input.setAttribute('maxlength', '200');
+    } else if (input.name && input.name.includes('tagline')) {
+      input.classList.add('step-tagline');
+      input.setAttribute('rows', '1');
+      input.setAttribute('maxlength', '100');
+    } else if (input.name && input.name.includes('answer')) {
+      input.classList.add('faq-answer');
+      input.setAttribute('rows', '4');
+      input.setAttribute('maxlength', '350');
+    }
+  });
+
+  fileInput.classList.add('file-upload-input');
+  fileInput.id = 'imageFile';
+
+  // Click to upload
+  fileUploadBox.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  // File input change
+  fileInput.addEventListener('change', function(e) {
+    handleFile(this.files[0]);
+  });
+
+  // Drag and drop
+  fileUploadBox.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileUploadBox.style.borderColor = '#3498db';
+    fileUploadBox.style.background = 'rgba(52, 152, 219, 0.1)';
+  });
+
+  fileUploadBox.addEventListener('dragleave', () => {
+    fileUploadBox.style.borderColor = '#cbd5e0';
+    fileUploadBox.style.background = '#f8f9fa';
+  });
+
+  fileUploadBox.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileUploadBox.style.borderColor = '#cbd5e0';
+    fileUploadBox.style.background = '#f8f9fa';
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInput.files = dataTransfer.files;
+      handleFile(file);
+    }
+  });
+
+  // Handle file
+  function handleFile(file) {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file (PNG, JPG, JPEG)');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      fileName.textContent = file.name;
+      fileUploadBox.style.display = 'none';
+      imagePreview.classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Remove image
+  removeImageBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput.value = '';
+    previewImg.src = '';
+    fileUploadBox.style.display = 'block';
+    imagePreview.classList.remove('show');
+  });
+
+  // Formset management
+  function updateFormsetNumbers(formsetType) {
+    const container = document.getElementById(`${formsetType}Formset`);
+    const items = container.querySelectorAll('.formset-item');
+    let visibleIndex = 1;
+    
+    items.forEach((item) => {
+      if (item.style.display !== 'none') {
+        const number = item.querySelector('.formset-number');
+        const title = item.querySelector('.formset-title');
+        if (number) number.textContent = visibleIndex;
+        
+        const titleText = formsetType === 'offer' ? 'Offer' : 
+                          formsetType === 'step' ? 'Step' : 'FAQ';
+        if (title) {
+          title.innerHTML = `<span class="formset-number">${visibleIndex}</span>${titleText} ${visibleIndex}`;
+        }
+        visibleIndex++;
+      }
+    });
+  }
+
+  function removeFormsetItem(btn, formsetType) {
+    const item = btn.closest('.formset-item');
+    const deleteInput = item.querySelector('input[name*="DELETE"]');
+    
+    if (deleteInput) {
+      deleteInput.checked = true;
+      item.style.display = 'none';
+    } else {
+      item.remove();
+    }
+    
+    updateFormsetNumbers(formsetType);
+    updateFormsetCount(formsetType);
+    updateAddButton(formsetType);
+  }
+
+  function addFormsetItem(formsetType) {
+    const container = document.getElementById(`${formsetType}Formset`);
+    const items = container.querySelectorAll('.formset-item');
+    const totalForms = document.querySelector(`input[name="${formsetType}_formset-TOTAL_FORMS"]`);
+    
+    const maxForms = formsetType === 'step' ? 4 : formsetType === 'faq' ? 6 : 999;
+    
+    // Count visible items
+    const visibleItems = Array.from(items).filter(item => item.style.display !== 'none');
+    
+    if (visibleItems.length >= maxForms) {
+      alert(`Maximum ${maxForms} ${formsetType}s allowed`);
+      return;
+    }
+    
+    // Find first hidden item and show it
+    for (let item of items) {
+      if (item.style.display === 'none') {
+        const deleteInput = item.querySelector('input[name*="DELETE"]');
+        if (deleteInput) {
+          deleteInput.checked = false;
+        }
+        item.style.display = 'block';
+        
+        // Clear values for newly shown item
+        item.querySelectorAll('input[type="text"], textarea').forEach(input => {
+          if (!input.name.includes('DELETE')) {
+            input.value = '';
+          }
+        });
+        
+        updateFormsetNumbers(formsetType);
+        updateAddButton(formsetType);
+        return;
+      }
+    }
+    
+    // If no hidden items, create new one
+    const currentCount = parseInt(totalForms.value);
+    const template = items[0].cloneNode(true);
+    template.style.display = 'block';
+    
+    // Clear values
+    template.querySelectorAll('input, textarea').forEach(input => {
+      if (!input.name.includes('DELETE') && input.type !== 'hidden') {
+        input.value = '';
+      }
+      if (input.name.includes('DELETE')) {
+        input.checked = false;
+      }
+    });
+    
+    // Update form indices
+    template.innerHTML = template.innerHTML.replace(
+      new RegExp(`${formsetType}_formset-\\d+-`, 'g'),
+      `${formsetType}_formset-${currentCount}-`
+    );
+    
+    // Ensure remove button exists
+    const header = template.querySelector('.formset-header');
+    if (!header.querySelector('.btn-remove-formset')) {
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn-remove-formset';
+      removeBtn.onclick = function() { removeFormsetItem(this, formsetType); };
+      removeBtn.innerHTML = '<i class="mdi mdi-delete"></i> Remove';
+      header.appendChild(removeBtn);
+    }
+    
+    // Apply appropriate classes to new textareas
+    template.querySelectorAll('textarea').forEach(textarea => {
+      if (formsetType === 'offer') {
+        textarea.classList.add('offer-description');
+        textarea.setAttribute('rows', '3');
+        textarea.setAttribute('maxlength', '200');
+      } else if (formsetType === 'step') {
+        textarea.classList.add('step-tagline');
+        textarea.setAttribute('rows', '1');
+        textarea.setAttribute('maxlength', '100');
+      } else if (formsetType === 'faq') {
+        textarea.classList.add('faq-answer');
+        textarea.setAttribute('rows', '4');
+        textarea.setAttribute('maxlength', '350');
+      }
+    });
+    
+    container.appendChild(template);
+    totalForms.value = currentCount + 1;
+    
+    updateFormsetNumbers(formsetType);
+    updateAddButton(formsetType);
+  }
+
+  function updateFormsetCount(formsetType) {
+    const container = document.getElementById(`${formsetType}Formset`);
+    const visibleItems = Array.from(container.querySelectorAll('.formset-item')).filter(
+      item => item.style.display !== 'none'
+    );
+    const totalForms = document.querySelector(`input[name="${formsetType}_formset-TOTAL_FORMS"]`);
+    // Don't update TOTAL_FORMS, just use it for tracking
+  }
+
+  function updateAddButton(formsetType) {
+    const maxForms = formsetType === 'step' ? 4 : formsetType === 'faq' ? 6 : 999;
+    const container = document.getElementById(`${formsetType}Formset`);
+    const visibleItems = Array.from(container.querySelectorAll('.formset-item')).filter(
+      item => item.style.display !== 'none'
+    );
+    const addBtn = document.getElementById(`add${formsetType.charAt(0).toUpperCase() + formsetType.slice(1)}Btn`);
+    
+    if (addBtn) {
+      if (visibleItems.length >= maxForms) {
+        addBtn.style.display = 'none';
+      } else {
+        addBtn.style.display = 'inline-flex';
+      }
+    }
+  }
+
+  // Initialize: Show only first item for offers and faqs, show all 4 steps
+  document.addEventListener('DOMContentLoaded', function() {
+    // For offers - show only first
+    const offerItems = document.querySelectorAll('#offerFormset .formset-item');
+    offerItems.forEach((item, index) => {
+      if (index > 0) {
+        item.style.display = 'none';
+      }
+    });
+    
+    // For faqs - show only first
+    const faqItems = document.querySelectorAll('#faqFormset .formset-item');
+    faqItems.forEach((item, index) => {
+      if (index > 0) {
+        item.style.display = 'none';
+      }
+    });
+    
+    // For steps - show all 4
+    const stepItems = document.querySelectorAll('#stepFormset .formset-item');
+    stepItems.forEach((item) => {
+      item.style.display = 'block';
+    });
+    
+    // Update button states
+    updateAddButton('offer');
+    updateAddButton('step');
+    updateAddButton('faq');
+    
+    // Update numbers
+    updateFormsetNumbers('offer');
+    updateFormsetNumbers('step');
+    updateFormsetNumbers('faq');
+  });
+
+  // Form validation
+  const form = document.getElementById('serviceForm');
+  form.addEventListener('submit', function(e) {
+    // Validate visible items only
+    let isValid = true;
+    
+    // Check offers
+    const offerItems = document.querySelectorAll('#offerFormset .formset-item');
+    offerItems.forEach((item) => {
+      if (item.style.display !== 'none') {
+        const title = item.querySelector('input[name*="title"]');
+        const description = item.querySelector('textarea[name*="description"]');
+        
+        if (title && !title.value.trim()) {
+          alert('Please fill in all offer titles');
+          isValid = false;
+          title.focus();
+          return false;
+        }
+        if (description && !description.value.trim()) {
+          alert('Please fill in all offer descriptions');
+          isValid = false;
+          description.focus();
+          return false;
+        }
+      }
+    });
+    
+    if (!isValid) {
+      e.preventDefault();
+      return false;
+    }
+    
+    // Check steps
+    const stepItems = document.querySelectorAll('#stepFormset .formset-item');
+    let visibleSteps = 0;
+    stepItems.forEach((item) => {
+      if (item.style.display !== 'none') {
+        visibleSteps++;
+        const title = item.querySelector('input[name*="title"]');
+        const tagline = item.querySelector('textarea[name*="tagline"]');
+        
+        if (title && !title.value.trim()) {
+          alert('Please fill in all step titles');
+          isValid = false;
+          title.focus();
+          return false;
+        }
+        if (tagline && !tagline.value.trim()) {
+          alert('Please fill in all step taglines');
+          isValid = false;
+          tagline.focus();
+          return false;
+        }
+      }
+    });
+    
+    if (visibleSteps !== 4) {
+      alert('Please provide exactly 4 process steps');
+      isValid = false;
+      e.preventDefault();
+      return false;
+    }
+    
+    if (!isValid) {
+      e.preventDefault();
+      return false;
+    }
+    
+    // Check FAQs
+    const faqItems = document.querySelectorAll('#faqFormset .formset-item');
+    faqItems.forEach((item) => {
+      if (item.style.display !== 'none') {
+        const question = item.querySelector('input[name*="question"]');
+        const answer = item.querySelector('textarea[name*="answer"]');
+        
+        if (question && !question.value.trim()) {
+          alert('Please fill in all FAQ questions');
+          isValid = false;
+          question.focus();
+          return false;
+        }
+        if (answer && !answer.value.trim()) {
+          alert('Please fill in all FAQ answers');
+          isValid = false;
+          answer.focus();
+          return false;
+        }
+      }
+    });
+    
+    if (!isValid) {
+      e.preventDefault();
+      return false;
+    }
+    
+    const submitBtn = form.querySelector('[type="submit"]');
+    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Saving...';
+    submitBtn.disabled = true;
+  });
+  
+  // Character counter for textareas
+  document.querySelectorAll('textarea').forEach(textarea => {
+    textarea.addEventListener('input', function() {
+      const maxLength = this.getAttribute('maxlength');
+      if (maxLength) {
+        const currentLength = this.value.length;
+        const remaining = maxLength - currentLength;
+        
+        if (remaining < 20) {
+          this.style.borderColor = remaining < 0 ? '#e74c3c' : '#f39c12';
+        } else {
+          this.style.borderColor = '#e9ecef';
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

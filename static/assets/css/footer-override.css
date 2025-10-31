@@ -1,0 +1,88 @@
+.tp-footer-area.tp-bg-common-black-1{background:linear-gradient(180deg,#04050a 0%,#041029 60%);color:#fff}
+.tp-footer-area.tp-bg-common-black-1 a{color:#dfe9ff}
+.tp-footer-area.tp-bg-common-black-1 .tp-footer-logo img{filter:brightness(1.06) drop-shadow(0 10px 30px rgba(0,0,0,0.6));}
+.tp-footer-area.tp-bg-common-black-1 p,.tp-footer-area.tp-bg-common-black-1 li{color:#e9eefc}
+.tp-footer-area.tp-bg-common-black-1 .tp-footer-wd-widget ul li a{color:#cfdcff}
+.tp-footer-area.tp-bg-common-black-1 .tp-footer-cst-bottom .tp-text-grey-5{color:#aeb9d4}
+/* subtle glossy line */
+.tp-footer-area.tp-bg-common-black-1:after{content:'';position:absolute;left:0;top:0;width:100%;height:6px;background:linear-gradient(90deg,rgba(255,255,255,0.03),rgba(255,255,255,0.09),rgba(255,255,255,0.03));pointer-events:none}
+/* Newsletter input visibility */
+.tp-footer-area.tp-bg-common-black-1 .tp-input{background:rgba(255,255,255,0.04) !important;border:1px solid rgba(255,255,255,0.06) !important;color:#fff !important}
+.tp-footer-area.tp-bg-common-black-1 .tp-input::placeholder{color:rgba(255,255,255,0.85) !important}
+.tp-footer-area.tp-bg-common-black-1 input.tp-input:-webkit-autofill, .tp-footer-area.tp-bg-common-black-1 input.tp-input:-internal-autofill-selected{background:rgba(255,255,255,0.04) !important; -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.04) inset !important; color:#fff !important}
+/* Add this CSS to your footer-override.css file or in the style block */
+
+/* 
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+
+.tp-footer-area {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+
+.container-fluid.container-1524 {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    overflow-x: hidden;
+}
+
+
+.tp-footer-wd-widget {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+
+.tp-footer-wd-main .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+@media (max-width: 991px) {
+    .tp-footer-wd-widget.ml-45,
+    .tp-footer-wd-widget.ml-60 {
+        margin-left: 0 !important;
+    }
+}
+
+
+.tp-footer-widget-form form {
+    max-width: 100%;
+}
+
+.tp-footer-widget-form .tp-input {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+
+.tp-footer-cst-menu ul {
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+
+.tp-footer-cst-bottom {
+    overflow-x: hidden;
+}
+
+.tp-footer-cst-bottom .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+} */

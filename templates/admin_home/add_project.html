@@ -1,0 +1,662 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-project-container {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .btn-back {
+    padding: 10px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-back:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+
+  .project-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .project-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+  }
+
+  .project-card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .project-card-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .form-textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #e67e22;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  /* File input styling */
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-input-custom {
+    padding: 20px;
+    border: 2px dashed #e9ecef;
+    border-radius: 10px;
+    background: #f8f9fa;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6c757d;
+  }
+
+  .file-input-custom:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .file-input-custom.has-file {
+    border-color: #27ae60;
+    background: #e8f5e8;
+    color: #27ae60;
+  }
+
+  .file-preview {
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .file-preview img {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+  }
+
+  .file-preview-info {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 8px;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn-submit {
+    flex: 1;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 14px 24px;
+    background: #e9ecef;
+    color: #495057;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+  }
+
+  .error-message {
+    font-size: 12px;
+    color: #e74c3c;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .success-message {
+    background: linear-gradient(135deg, #27ae60, #219653);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .add-project-container {
+      padding: 0 15px;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .project-card-body {
+      padding: 20px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .header-left h2 {
+      font-size: 20px;
+    }
+
+    .project-card-header {
+      padding: 20px;
+    }
+
+    .project-card-header h3 {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<div class="add-project-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Add New Project</h2>
+      <p>Create a new project to showcase your work</p>
+    </div>
+    <a href="{% url 'view_projects' %}" class="btn-back">
+      <i class="mdi mdi-arrow-left"></i>
+      Back to Projects
+    </a>
+  </div>
+
+  <!-- Success Message -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'success' %}
+        <div class="success-message">
+          <i class="mdi mdi-check-circle"></i>
+          {{ message }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  <!-- Project Card -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <h3>
+        <i class="mdi mdi-plus-circle"></i>
+        Project Details
+      </h3>
+    </div>
+    <div class="project-card-body">
+      <form class="forms-sample" method="POST" enctype="multipart/form-data" id="projectForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label class="form-label">
+            Project Name<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="project_name" 
+            id="projectName" 
+            placeholder="Enter project name"
+            value="{{ form.project_name.value|default_if_none:'' }}"
+            required
+            maxlength="100"
+          >
+          <div class="character-count" id="projectNameCount">0/100 characters</div>
+          {% if form.project_name.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.project_name.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Project Link<span class="required">*</span>
+          </label>
+          <input 
+            type="url" 
+            class="form-control" 
+            name="website_link" 
+            id="projectLink" 
+            placeholder="https://example.com"
+            value="{{ form.website_link.value|default_if_none:'' }}"
+            required
+            maxlength="200"
+          >
+          <div class="character-count" id="projectLinkCount">0/200 characters</div>
+          {% if form.website_link.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.website_link.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Project Image<span class="required">*</span>
+          </label>
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              class="form-control" 
+              name="project_image" 
+              id="projectImage"
+              accept="image/*"
+              required
+            >
+            <div class="file-input-custom" id="fileInputCustom">
+              <i class="mdi mdi-cloud-upload"></i>
+              Click to browse or drag & drop project image
+              <br>
+              <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+            </div>
+          </div>
+          
+          <!-- Image Preview -->
+          <div class="file-preview" id="imagePreview" style="display: none;">
+            <img id="previewImage" src="" alt="Project preview">
+            <div class="file-preview-info" id="fileInfo"></div>
+          </div>
+
+          {% if form.project_image.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.project_image.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-actions">
+          <a href="{% url 'view_projects' %}" class="btn-cancel">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </a>
+          <button type="submit" class="btn-submit">
+            <i class="mdi mdi-check"></i>
+            Create Project
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const projectName = document.getElementById('projectName');
+    const projectLink = document.getElementById('projectLink');
+    const projectImage = document.getElementById('projectImage');
+    const fileInputCustom = document.getElementById('fileInputCustom');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const fileInfo = document.getElementById('fileInfo');
+    const projectForm = document.getElementById('projectForm');
+
+    // Character count functionality
+    function updateCharacterCount(element, countElement, maxLength) {
+      const currentLength = element.value.length;
+      countElement.textContent = `${currentLength}/${maxLength} characters`;
+      
+      if (currentLength > maxLength * 0.9) {
+        countElement.classList.add('warning');
+        countElement.classList.remove('error');
+      } else if (currentLength > maxLength) {
+        countElement.classList.add('error');
+        countElement.classList.remove('warning');
+      } else {
+        countElement.classList.remove('warning', 'error');
+      }
+    }
+
+    // File input functionality
+    function setupFileInput() {
+      projectImage.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+          // Validate file type
+          if (!file.type.startsWith('image/')) {
+            alert('Please select an image file (JPG, PNG, WebP)');
+            resetFileInput();
+            return;
+          }
+          
+          // Validate file size (max 5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            alert('File size should be less than 5MB');
+            resetFileInput();
+            return;
+          }
+          
+          // Update file input display
+          fileInputCustom.classList.add('has-file');
+          fileInputCustom.innerHTML = `
+            <i class="mdi mdi-check-circle" style="color: #27ae60;"></i>
+            ${file.name}
+            <br>
+            <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+          `;
+          
+          // Show image preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            fileInfo.textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            imagePreview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resetFileInput();
+        }
+      });
+
+      // Drag and drop functionality
+      fileInputCustom.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#3498db';
+        this.style.background = '#e3f2fd';
+      });
+
+      fileInputCustom.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        if (!fileInputCustom.classList.contains('has-file')) {
+          this.style.borderColor = '#e9ecef';
+          this.style.background = '#f8f9fa';
+        }
+      });
+
+      fileInputCustom.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          projectImage.files = files;
+          projectImage.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+
+    function resetFileInput() {
+      projectImage.value = '';
+      fileInputCustom.classList.remove('has-file');
+      fileInputCustom.innerHTML = `
+        <i class="mdi mdi-cloud-upload"></i>
+        Click to browse or drag & drop project image
+        <br>
+        <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+      `;
+      imagePreview.style.display = 'none';
+    }
+
+    // Form validation
+    projectForm.addEventListener('submit', function(e) {
+      const name = projectName.value.trim();
+      const link = projectLink.value.trim();
+      const image = projectImage.files[0];
+      
+      if (!name) {
+        e.preventDefault();
+        alert('Please enter a project name.');
+        projectName.focus();
+        return false;
+      }
+      
+      if (!link) {
+        e.preventDefault();
+        alert('Please enter a project link.');
+        projectLink.focus();
+        return false;
+      }
+      
+      // Validate URL format
+      try {
+        new URL(link);
+      } catch (_) {
+        e.preventDefault();
+        alert('Please enter a valid URL (e.g., https://example.com)');
+        projectLink.focus();
+        return false;
+      }
+      
+      if (!image) {
+        e.preventDefault();
+        alert('Please select a project image.');
+        return false;
+      }
+      
+      if (name.length > 100) {
+        e.preventDefault();
+        alert('Project name must be 100 characters or less.');
+        projectName.focus();
+        return false;
+      }
+      
+      if (link.length > 200) {
+        e.preventDefault();
+        alert('Project link must be 200 characters or less.');
+        projectLink.focus();
+        return false;
+      }
+      
+      // Validate file
+      if (image) {
+        if (!image.type.startsWith('image/')) {
+          e.preventDefault();
+          alert('Please select a valid image file.');
+          return false;
+        }
+        
+        if (image.size > 5 * 1024 * 1024) {
+          e.preventDefault();
+          alert('File size should be less than 5MB.');
+          return false;
+        }
+      }
+    });
+
+    // Initialize character count listeners
+    if (projectName) {
+      projectName.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('projectNameCount'), 100);
+      });
+      // Initialize count on page load
+      updateCharacterCount(projectName, document.getElementById('projectNameCount'), 100);
+    }
+    
+    if (projectLink) {
+      projectLink.addEventListener('input', function() {
+        updateCharacterCount(this, document.getElementById('projectLinkCount'), 200);
+      });
+      // Initialize count on page load
+      updateCharacterCount(projectLink, document.getElementById('projectLinkCount'), 200);
+    }
+
+    // Setup file input functionality
+    setupFileInput();
+
+    // Focus on first input field
+    if (projectName) {
+      projectName.focus();
+    }
+  });
+</script>
+{% endblock %}

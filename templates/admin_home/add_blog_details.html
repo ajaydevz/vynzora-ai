@@ -1,0 +1,975 @@
+{% extends "admin_home/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .add-blog-container {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .header-left p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .btn-back {
+    padding: 10px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-back:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  }
+
+  .blog-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .blog-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px 30px;
+    color: white;
+  }
+
+  .blog-card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .blog-card-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+
+  .form-label .required {
+    color: #e74c3c;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  .form-textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .character-count {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .character-count.warning {
+    color: #e67e22;
+  }
+
+  .character-count.error {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  /* File input styling */
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-input-custom {
+    padding: 20px;
+    border: 2px dashed #e9ecef;
+    border-radius: 10px;
+    background: #f8f9fa;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #6c757d;
+  }
+
+  .file-input-custom:hover {
+    border-color: #3498db;
+    background: #e3f2fd;
+  }
+
+  .file-input-custom.has-file {
+    border-color: #27ae60;
+    background: #e8f5e8;
+    color: #27ae60;
+  }
+
+  .file-preview {
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .file-preview img {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+  }
+
+  .file-preview-info {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 8px;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn-submit {
+    flex: 1;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 14px 24px;
+    background: #e9ecef;
+    color: #495057;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .btn-cancel:hover {
+    background: #dee2e6;
+  }
+
+  .error-message {
+    font-size: 12px;
+    color: #e74c3c;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .success-message {
+    background: linear-gradient(135deg, #27ae60, #219653);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Quick Actions Section */
+  .quick-actions {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 2px solid #e9ecef;
+  }
+
+  .quick-actions h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+
+  .btn-preview {
+    background: #6c757d;
+    color: white;
+  }
+
+  .btn-preview:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+  }
+
+  .btn-clear {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .btn-clear:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .add-blog-container {
+      padding: 0 15px;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .blog-card-body {
+      padding: 20px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .btn-action {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .header-left h2 {
+      font-size: 20px;
+    }
+
+    .blog-card-header {
+      padding: 20px;
+    }
+
+    .blog-card-header h3 {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<div class="add-blog-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Add New Blog</h2>
+      <p>Create a new blog post to share with your audience</p>
+    </div>
+    <a href="{% url 'view_blog_details' %}" class="btn-back">
+      <i class="mdi mdi-arrow-left"></i>
+      Back to Blogs
+    </a>
+  </div>
+
+  <!-- Success Message -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'success' %}
+        <div class="success-message">
+          <i class="mdi mdi-check-circle"></i>
+          {{ message }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  <!-- Error Messages -->
+  {% if form.errors %}
+    <div class="error-messages" style="margin-bottom: 20px;">
+      {% for field in form %}
+        {% for error in field.errors %}
+          <div class="error-message" style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+            <i class="mdi mdi-alert-circle"></i>
+            <strong>{{ field.label }}:</strong> {{ error }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+        <div class="error-message" style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+          <i class="mdi mdi-alert-circle"></i>
+          {{ error }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Quick Actions -->
+  {% comment %} <div class="quick-actions">
+    <h4>
+      <i class="mdi mdi-lightning-bolt"></i>
+      Quick Actions
+    </h4>
+    <div class="action-buttons">
+      <button type="button" class="btn-action btn-preview" onclick="previewBlog()">
+        <i class="mdi mdi-eye"></i>
+        Preview Blog
+      </button>
+      <button type="button" class="btn-action btn-clear" onclick="clearForm()">
+        <i class="mdi mdi-broom"></i>
+        Clear Form
+      </button>
+    </div>
+  </div> {% endcomment %}
+
+  <!-- Blog Card -->
+  <div class="blog-card">
+    <div class="blog-card-header">
+      <h3>
+        <i class="mdi mdi-pencil-plus"></i>
+        Blog Details
+      </h3>
+    </div>
+    <div class="blog-card-body">
+      <form class="forms-sample" method="POST" enctype="multipart/form-data" id="blogForm" action="{% url 'add_blog_details' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label class="form-label">
+            Blog Name<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="name" 
+            id="blogName" 
+            placeholder="Enter blog title"
+            value="{{ form.name.value|default_if_none:'' }}"
+            required
+            maxlength="200"
+          >
+          <div class="character-count" id="blogNameCount">0/200 characters</div>
+          {% if form.name.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.name.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Slug Name<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="slug" 
+            id="blogSlug" 
+            placeholder="blog-post-url-slug"
+            value="{{ form.slug.value|default_if_none:'' }}"
+            required
+            maxlength="100"
+          >
+          <div class="character-count" id="blogSlugCount">0/100 characters</div>
+          <small style="color: #6c757d; font-size: 12px;">This will be used in the URL. Only lowercase letters, numbers, and hyphens are allowed.</small>
+          {% if form.slug.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.slug.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Meta Title<span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control" 
+            name="meta_title" 
+            id="metaTitle" 
+            placeholder="SEO meta title for search engines"
+            value="{{ form.meta_title.value|default_if_none:'' }}"
+            required
+            maxlength="200"
+          >
+          <div class="character-count" id="metaTitleCount">0/200 characters</div>
+          {% if form.meta_title.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.meta_title.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Meta Description<span class="required">*</span>
+          </label>
+          <textarea 
+            class="form-control form-textarea" 
+            name="meta_description" 
+            id="metaDescription" 
+            placeholder="Brief description for search engine results"
+            required
+            maxlength="500"
+          >{{ form.meta_description.value|default_if_none:'' }}</textarea>
+          <div class="character-count" id="metaDescriptionCount">0/500 characters</div>
+          {% if form.meta_description.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.meta_description.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Blog Description<span class="required">*</span>
+          </label>
+          <textarea 
+            class="form-control" 
+            name="description" 
+            id="blogDescription" 
+            rows="5" 
+            placeholder="Write your blog content here..."
+            required
+          >{{ form.description.value|default_if_none:'' }}</textarea>
+          {% if form.description.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.description.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Blog Image<span class="required">*</span>
+          </label>
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              class="form-control" 
+              name="image" 
+              id="blogImage"
+              accept="image/*"
+              {% if not form.image.value %}required{% endif %}
+            >
+            <div class="file-input-custom" id="fileInputCustom">
+              <i class="mdi mdi-cloud-upload"></i>
+              Click to browse or drag & drop blog image
+              <br>
+              <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+            </div>
+          </div>
+          
+          <!-- Image Preview -->
+          <div class="file-preview" id="imagePreview" style="display: none;">
+            <img id="previewImage" src="" alt="Blog preview">
+            <div class="file-preview-info" id="fileInfo"></div>
+          </div>
+
+          {% if form.image.errors %}
+            <div class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              {{ form.image.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-actions">
+          <a href="{% url 'view_blog_details' %}" class="btn-cancel">
+            <i class="mdi mdi-close"></i>
+            Cancel
+          </a>
+          <button type="submit" class="btn-submit" id="submitButton">
+            <i class="mdi mdi-check"></i>
+            Create Blog Post
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const blogForm = document.getElementById('blogForm');
+    const blogName = document.getElementById('blogName');
+    const blogSlug = document.getElementById('blogSlug');
+    const metaTitle = document.getElementById('metaTitle');
+    const metaDescription = document.getElementById('metaDescription');
+    const blogDescription = document.getElementById('blogDescription');
+    const blogImage = document.getElementById('blogImage');
+    const fileInputCustom = document.getElementById('fileInputCustom');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const fileInfo = document.getElementById('fileInfo');
+    const submitButton = document.getElementById('submitButton');
+
+    // Character count functionality
+    function updateCharacterCount(element, countElement, maxLength) {
+      const currentLength = element.value.length;
+      countElement.textContent = `${currentLength}/${maxLength} characters`;
+      
+      if (currentLength > maxLength * 0.9) {
+        countElement.classList.add('warning');
+        countElement.classList.remove('error');
+      } else if (currentLength > maxLength) {
+        countElement.classList.add('error');
+        countElement.classList.remove('warning');
+      } else {
+        countElement.classList.remove('warning', 'error');
+      }
+    }
+
+    // Improved slug generation
+    function generateSlug(text) {
+      return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '') // Remove special characters
+        .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+        .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+    }
+
+    // Auto-generate slug from blog name
+    blogName.addEventListener('input', function() {
+      if (!blogSlug.dataset.manualEdit || blogSlug.dataset.manualEdit === 'false') {
+        const slug = generateSlug(blogName.value);
+        blogSlug.value = slug;
+        updateCharacterCount(blogSlug, document.getElementById('blogSlugCount'), 100);
+      }
+    });
+
+    // Mark slug as manually edited when user types in it
+    blogSlug.addEventListener('input', function() {
+      blogSlug.dataset.manualEdit = 'true';
+      updateCharacterCount(blogSlug, document.getElementById('blogSlugCount'), 100);
+    });
+
+    // File input functionality
+    function setupFileInput() {
+      blogImage.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+          // Validate file type
+          const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+          if (!validTypes.includes(file.type)) {
+            alert('Please select a valid image file (JPG, PNG, WebP)');
+            resetFileInput();
+            return;
+          }
+          
+          // Validate file size (max 5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            alert('File size should be less than 5MB');
+            resetFileInput();
+            return;
+          }
+          
+          // Update file input display
+          fileInputCustom.classList.add('has-file');
+          fileInputCustom.innerHTML = `
+            <i class="mdi mdi-check-circle" style="color: #27ae60;"></i>
+            ${file.name}
+            <br>
+            <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+          `;
+          
+          // Show image preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            fileInfo.textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            imagePreview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resetFileInput();
+        }
+      });
+
+      // Drag and drop functionality
+      fileInputCustom.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#3498db';
+        this.style.background = '#e3f2fd';
+      });
+
+      fileInputCustom.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        if (!fileInputCustom.classList.contains('has-file')) {
+          this.style.borderColor = '#e9ecef';
+          this.style.background = '#f8f9fa';
+        }
+      });
+
+      fileInputCustom.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          blogImage.files = files;
+          blogImage.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+
+    function resetFileInput() {
+      blogImage.value = '';
+      fileInputCustom.classList.remove('has-file');
+      fileInputCustom.innerHTML = `
+        <i class="mdi mdi-cloud-upload"></i>
+        Click to browse or drag & drop blog image
+        <br>
+        <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+      `;
+      imagePreview.style.display = 'none';
+    }
+
+    // Improved form validation
+    blogForm.addEventListener('submit', function(e) {
+      console.log('Form submission started...');
+      
+      // Disable submit button to prevent double submission
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Creating Blog...';
+
+      const name = blogName.value.trim();
+      const slug = blogSlug.value.trim();
+      const metaTitleText = metaTitle.value.trim();
+      const metaDesc = metaDescription.value.trim();
+      const descriptionText = blogDescription.value.trim();
+      const image = blogImage.files[0];
+
+      let hasError = false;
+
+      // Clear previous error highlights
+      document.querySelectorAll('.form-control').forEach(field => {
+        field.style.borderColor = '#e9ecef';
+      });
+
+      // Basic validation
+      if (!name) {
+        blogName.style.borderColor = '#e74c3c';
+        hasError = true;
+      }
+      
+      if (!slug) {
+        blogSlug.style.borderColor = '#e74c3c';
+        hasError = true;
+      }
+      
+      if (!metaTitleText) {
+        metaTitle.style.borderColor = '#e74c3c';
+        hasError = true;
+      }
+      
+      if (!metaDesc) {
+        metaDescription.style.borderColor = '#e74c3c';
+        hasError = true;
+      }
+      
+      if (!descriptionText) {
+        blogDescription.style.borderColor = '#e74c3c';
+        hasError = true;
+      }
+      
+      if (!image) {
+        fileInputCustom.style.borderColor = '#e74c3c';
+        hasError = true;
+      }
+
+      if (hasError) {
+        e.preventDefault();
+        alert('Please fill in all required fields (marked in red).');
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+        return false;
+      }
+
+      // Character limit validation
+      if (name.length > 200) {
+        e.preventDefault();
+        alert('Blog name must be 200 characters or less.');
+        blogName.focus();
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+        return false;
+      }
+
+      if (slug.length > 100) {
+        e.preventDefault();
+        alert('Slug must be 100 characters or less.');
+        blogSlug.focus();
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+        return false;
+      }
+
+      if (metaTitleText.length > 200) {
+        e.preventDefault();
+        alert('Meta title must be 200 characters or less.');
+        metaTitle.focus();
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+        return false;
+      }
+
+      if (metaDesc.length > 500) {
+        e.preventDefault();
+        alert('Meta description must be 500 characters or less.');
+        metaDescription.focus();
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+        return false;
+      }
+
+      // Validate slug format
+      const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+      if (!slugRegex.test(slug)) {
+        e.preventDefault();
+        alert('Slug can only contain lowercase letters, numbers, and hyphens. It cannot start or end with a hyphen.');
+        blogSlug.focus();
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+        return false;
+      }
+
+      // Validate file
+      if (image) {
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(image.type)) {
+          e.preventDefault();
+          alert('Please select a valid image file (JPG, PNG, WebP).');
+          submitButton.disabled = false;
+          submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+          return false;
+        }
+        
+        if (image.size > 5 * 1024 * 1024) {
+          e.preventDefault();
+          alert('File size should be less than 5MB.');
+          submitButton.disabled = false;
+          submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+          return false;
+        }
+      }
+
+      console.log('Form validation passed, submitting...');
+      // If all validations pass, the form will submit normally
+    });
+
+    // Initialize character count listeners
+    const fields = [
+      { element: blogName, maxLength: 200 },
+      { element: blogSlug, maxLength: 100 },
+      { element: metaTitle, maxLength: 200 },
+      { element: metaDescription, maxLength: 500 }
+    ];
+
+    fields.forEach(field => {
+      if (field.element) {
+        field.element.addEventListener('input', function() {
+          const countElement = document.getElementById(field.element.id + 'Count');
+          updateCharacterCount(this, countElement, field.maxLength);
+        });
+        const countElement = document.getElementById(field.element.id + 'Count');
+        updateCharacterCount(field.element, countElement, field.maxLength);
+      }
+    });
+
+    // Setup file input functionality
+    setupFileInput();
+
+    // Focus on first input field
+    if (blogName) {
+      blogName.focus();
+    }
+  });
+
+  // Quick Actions Functions
+  function previewBlog() {
+    const name = document.getElementById('blogName').value;
+    const slug = document.getElementById('blogSlug').value;
+    
+    if (!name || !slug) {
+      alert('Please fill in at least blog name and slug to preview.');
+      return;
+    }
+
+    alert(`Blog Preview:\n\nTitle: ${name}\nSlug: ${slug}\n\nThis is a preview. Submit the form to create the actual blog post.`);
+  }
+
+  function clearForm() {
+    if (confirm('Are you sure you want to clear all form fields?')) {
+      document.getElementById('blogForm').reset();
+      
+      // Reset character counts
+      document.querySelectorAll('.character-count').forEach(count => {
+        count.textContent = '0 characters';
+        count.classList.remove('warning', 'error');
+      });
+      
+      // Reset file input
+      resetFileInput();
+      
+      // Reset submit button
+      const submitButton = document.getElementById('submitButton');
+      submitButton.disabled = false;
+      submitButton.innerHTML = '<i class="mdi mdi-check"></i> Create Blog Post';
+      
+      // Reset manual edit flag for slug
+      document.getElementById('blogSlug').dataset.manualEdit = 'false';
+      
+      // Reset border colors
+      document.querySelectorAll('.form-control').forEach(field => {
+        field.style.borderColor = '#e9ecef';
+      });
+      document.getElementById('fileInputCustom').style.borderColor = '#e9ecef';
+    }
+  }
+
+  function resetFileInput() {
+    document.getElementById('blogImage').value = '';
+    document.getElementById('fileInputCustom').classList.remove('has-file');
+    document.getElementById('fileInputCustom').innerHTML = `
+      <i class="mdi mdi-cloud-upload"></i>
+      Click to browse or drag & drop blog image
+      <br>
+      <small>Supports: JPG, PNG, WebP (Max: 5MB)</small>
+    `;
+    document.getElementById('imagePreview').style.display = 'none';
+  }
+</script>
+{% endblock %}
